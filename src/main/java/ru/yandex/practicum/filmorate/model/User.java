@@ -12,7 +12,7 @@ import java.time.LocalDate;
 
 @Data
 @EqualsAndHashCode(of = "id")
-@Builder
+@Builder(toBuilder = true)
 public class User {
     private Long id;
     @NotNull

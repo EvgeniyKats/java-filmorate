@@ -45,7 +45,7 @@ public class UserController {
             return user;
         } catch (ValidationException | DuplicateException e) {
             log.warn("Не удалось создать пользователя {} с ошибкой: {}.", user, e.getMessage());
-            throw new RuntimeException(e.getMessage());
+            throw e;
         }
     }
 
@@ -59,7 +59,7 @@ public class UserController {
             return user;
         } catch (ValidationException | DuplicateException e) {
             log.warn("Не удалось обновить пользователя {} с ошибкой: {}.", user, e.getMessage());
-            throw new RuntimeException(e.getMessage());
+            throw e;
         }
     }
 
@@ -73,7 +73,7 @@ public class UserController {
             }
             log.trace("User прошёл проверку на отсутствие id в хранилище.");
             User oldUser = users.get(user.getId());
-            if (!oldUser.getId().equals(user.getId())) {
+            if (!oldUser. getEmail().equals(user.getEmail())) {
                 for (User u : users.values()) {
                     if (u.getEmail().equals(user.getEmail())) {
                         throw new DuplicateException("Такой Email уже используется");
