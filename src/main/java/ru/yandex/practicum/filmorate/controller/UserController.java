@@ -38,7 +38,7 @@ public class UserController {
         try {
             validateUser(user, false);
             long id = getNextId();
-            log.debug("Был получен id для film: {}", id);
+            log.debug("Был получен id для user: {}", id);
             user.setId(id);
             users.put(id, user);
             log.info("User {}, был добавлен в хранилище.", user);
