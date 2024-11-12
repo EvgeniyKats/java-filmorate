@@ -10,7 +10,7 @@ import java.time.LocalDate;
 
 @Data
 @EqualsAndHashCode(of = "id")
-@Builder
+@Builder(toBuilder = true)
 public class Film {
     public static final LocalDate MOST_EARLY_RELEASE_DATE =
             LocalDate.of(1895, 12, 28);

@@ -44,7 +44,7 @@ public class FilmController {
             return film;
         } catch (ValidationException | DuplicateException e) {
             log.warn("Не удалось создать фильм {} с ошибкой: {}.", film, e.getMessage());
-            throw new RuntimeException(e.getMessage());
+            throw e;
         }
     }
 
@@ -58,7 +58,7 @@ public class FilmController {
             return film;
         } catch (ValidationException | DuplicateException e) {
             log.warn("Не удалось обновить фильм {} с ошибкой: {}", film, e.getMessage());
-            throw new RuntimeException(e.getMessage());
+            throw e;
         }
     }
 
