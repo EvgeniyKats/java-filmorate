@@ -95,28 +95,6 @@ class UserControllerTest {
     }
 
     @Test
-    void shouldBeFailedCreateUserWithSpaceInLogin() {
-        User user = User.builder()
-                .email("test@test.ru")
-                .name("Name")
-                .login("Lo gin")
-                .birthday(LocalDate.of(2000, 1, 1))
-                .build();
-        assertThrows(ValidationException.class, () -> userController.createUser(user));
-    }
-
-    @Test
-    void shouldBeFailedCreateUserWithBirthdayInFuture() {
-        User user = User.builder()
-                .email("test@test.ru")
-                .name("Name")
-                .login("Login")
-                .birthday(LocalDate.now().plusDays(1))
-                .build();
-        assertThrows(ValidationException.class, () -> userController.createUser(user));
-    }
-
-    @Test
     void shouldBeFailedCreateUserAgain() {
         User user = User.builder()
                 .email("test@test.ru")

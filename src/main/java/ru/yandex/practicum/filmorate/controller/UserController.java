@@ -1,7 +1,7 @@
 package ru.yandex.practicum.filmorate.controller;
 
-import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -11,12 +11,12 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.yandex.practicum.filmorate.exception.DuplicateException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.validated.Create;
+import ru.yandex.practicum.filmorate.validated.Update;
 
-import java.time.LocalDate;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-
 
 @Slf4j
 @RestController
@@ -33,10 +33,14 @@ public class UserController {
     }
 
     @PostMapping
-    public User createUser(@Valid @RequestBody User user) {
+    public User createUser(@Validated(Create.class) @RequestBody User user) {
         log.info("Получен POST запрос /users");
         try {
             validateUser(user, false);
+            if (user.getName() == null || user.getName().isBlank()) {
+                user.setName(user.getLogin());
+                log.trace("Пользователь не указал имя. Для отображения используется логин.");
+            }
             long id = getNextId();
             log.debug("Был получен id для user: {}", id);
             user.setId(id);
@@ -50,10 +54,11 @@ public class UserController {
     }
 
     @PutMapping
-    public User updateUser(@Valid @RequestBody User user) {
+    public User updateUser(@Validated(Update.class) @RequestBody User user) {
         log.info("Получен PUT запрос /users");
         try {
             validateUser(user, true);
+            user = mergeUserInfo(user);
             users.put(user.getId(), user);
             log.info("User {}, был обновлен в хранилище.", user);
             return user;
@@ -65,40 +70,34 @@ public class UserController {
 
     private void validateUser(User user, boolean update) throws ValidationException, DuplicateException {
         if (update) {
-            if (user.getId() == null) throw new ValidationException("user.getId() == null");
-            log.trace("User прошёл проверку на id == null");
-
             if (!users.containsKey(user.getId())) {
                 throw new ValidationException("В хранилище " + users.keySet() + ", отсутствует id: " + user.getId());
             }
             log.trace("User прошёл проверку на отсутствие id в хранилище.");
-            User oldUser = users.get(user.getId());
-            if (!oldUser.getEmail().equals(user.getEmail())) {
-                for (User u : users.values()) {
-                    if (u.getEmail().equals(user.getEmail())) {
-                        throw new DuplicateException("Такой Email уже используется");
-                    }
-                }
+            if (!users.get(user.getId()).getEmail().equals(user.getEmail())) {
+                throwDuplicateIfEmailAlreadyInBase(user.getEmail());
             }
         } else {
-            for (User u : users.values()) {
-                if (u.getEmail().equals(user.getEmail())) throw new DuplicateException("Такой Email уже используется");
-            }
+            throwDuplicateIfEmailAlreadyInBase(user.getEmail());
         }
         log.trace("User прошёл проверку на дубликат.");
+    }
 
-        if (user.getLogin().contains(" ")) throw new ValidationException("Логин содержит пробелы.");
-        log.trace("User прошёл проверку на пробелы в логине {}.", user.getLogin());
-
-        if (user.getBirthday().isAfter(LocalDate.now())) {
-            throw new ValidationException("Дата рождения не может быть в будущем");
+    private void throwDuplicateIfEmailAlreadyInBase(String email) throws DuplicateException {
+        for (User u : users.values()) {
+            if (u.getEmail().equals(email)) {
+                throw new DuplicateException("Такой Email уже используется " + email);
+            }
         }
-        log.trace("User прошёл проверку на дату рождения в будущем {}.", user.getBirthday());
+    }
 
-        if (user.getName() == null || user.getName().isBlank()) {
-            user.setName(user.getLogin());
-            log.debug("User не указал имя, для отображения установлен логин.");
-        }
+    private User mergeUserInfo(User newUser) {
+        User oldUser = users.get(newUser.getId());
+        if (newUser.getEmail() != null) oldUser.setEmail(newUser.getEmail());
+        if (newUser.getBirthday() != null) oldUser.setBirthday(newUser.getBirthday());
+        if (newUser.getLogin() != null) oldUser.setLogin(newUser.getLogin());
+        if (newUser.getName() != null && !newUser.getName().isBlank()) oldUser.setName(newUser.getName());
+        return oldUser;
     }
 
     private long getNextId() {

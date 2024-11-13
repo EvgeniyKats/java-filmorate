@@ -83,34 +83,12 @@ class FilmControllerTest {
     }
 
     @Test
-    void shouldFailedCreateWithDescription201Symbols() {
-        Film film = Film.builder()
-                .name("Name")
-                .description("d".repeat(201))
-                .releaseDate(LocalDate.of(2000, 1, 1))
-                .duration(60)
-                .build();
-        assertThrows(ValidationException.class, () -> filmController.createFilm(film));
-    }
-
-    @Test
     void shouldFailedCreateWithBadReleaseDate() {
         Film film = Film.builder()
                 .name("Name")
                 .description("Description")
                 .releaseDate(FilmController.MOST_EARLY_RELEASE_DATE.minusDays(1))
                 .duration(60)
-                .build();
-        assertThrows(ValidationException.class, () -> filmController.createFilm(film));
-    }
-
-    @Test
-    void shouldFailedCreateWithNegativeDuration() {
-        Film film = Film.builder()
-                .name("Name")
-                .description("Description")
-                .releaseDate(LocalDate.of(2000, 1, 1))
-                .duration(-1)
                 .build();
         assertThrows(ValidationException.class, () -> filmController.createFilm(film));
     }

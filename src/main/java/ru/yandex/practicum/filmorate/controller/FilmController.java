@@ -1,7 +1,7 @@
 package ru.yandex.practicum.filmorate.controller;
 
-import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -11,12 +11,13 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.yandex.practicum.filmorate.exception.DuplicateException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.validated.Create;
+import ru.yandex.practicum.filmorate.validated.Update;
 
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-
 
 @Slf4j
 @RestController
@@ -35,7 +36,7 @@ public class FilmController {
     }
 
     @PostMapping
-    public Film createFilm(@Valid @RequestBody Film film) {
+    public Film createFilm(@Validated(Create.class) @RequestBody Film film) {
         log.info("Получен POST запрос /films");
         try {
             validateFilm(film, false);
@@ -52,10 +53,11 @@ public class FilmController {
     }
 
     @PutMapping
-    public Film updateFilm(@Valid @RequestBody Film film) {
+    public Film updateFilm(@Validated(Update.class) @RequestBody Film film) {
         log.info("Получен PUT запрос /films");
         try {
             validateFilm(film, true);
+            film = mergeFilmInfo(film);
             films.put(film.getId(), film);
             log.info("Film {}, был обновлен в хранилище.", film);
             return film;
@@ -67,44 +69,39 @@ public class FilmController {
 
     private void validateFilm(Film film, boolean update) throws ValidationException, DuplicateException {
         if (update) {
-            if (film.getId() == null) throw new ValidationException("film.getId() == null");
-            log.trace("Film прошёл проверку на id == null");
-
             if (!films.containsKey(film.getId())) {
                 throw new ValidationException("В хранилище " + films.keySet() + ", отсутствует id: " + film.getId());
             }
             log.trace("Film прошёл проверку на отсутствие id в хранилище.");
-            Film oldFilm = films.get(film.getId());
-            if (!oldFilm.getName().equals(film.getName())) {
-                for (Film f : films.values()) {
-                    if (f.getName().equals(film.getName())) {
-                        throw new DuplicateException("Film с названием " + film.getName() + " уже содержится в базе.");
-                    }
-                }
+            if (!films.get(film.getId()).getName().equals(film.getName())) {
+                throwDuplicateIfNameAlreadyInBase(film.getName());
             }
         } else {
-            for (Film f : films.values()) {
-                if (f.getName().equals(film.getName())) {
-                    throw new DuplicateException("Film с названием " + film.getName() + " уже содержится в базе.");
-                }
-            }
+            throwDuplicateIfNameAlreadyInBase(film.getName());
         }
         log.trace("Film прошёл проверку на дубликат.");
 
-        if (film.getDescription().length() > 200) {
-            throw new ValidationException("Описание фильма превышает 200 символов.");
-        }
-        log.trace("Film прошёл проверку <= 200 символов в description: {}", film.getDescription().length());
-
-        if (film.getReleaseDate().isBefore(MOST_EARLY_RELEASE_DATE)) {
+        if (film.getReleaseDate() != null && film.getReleaseDate().isBefore(MOST_EARLY_RELEASE_DATE)) {
             throw new ValidationException("Дата релиза раньше 28 декабря 1895 г.");
         }
         log.trace("Film прошёл проверку на дату релиза <= 28.12.1895: {}.", film.getReleaseDate());
+    }
 
-        if (film.getDuration() < 0) {
-            throw new ValidationException("Продолжительность фильма отрицательная.");
+    private void throwDuplicateIfNameAlreadyInBase(String name) throws DuplicateException {
+        for (Film f : films.values()) {
+            if (f.getName().equals(name)) {
+                throw new DuplicateException("Film с названием " + name + " уже содержится в базе.");
+            }
         }
-        log.trace("Film прошёл проверку на отрицательную продолжительность: {}.", film.getDuration());
+    }
+
+    private Film mergeFilmInfo(Film newFilm) {
+        Film oldFilm = films.get(newFilm.getId());
+        if (newFilm.getName() != null) oldFilm.setName(newFilm.getName());
+        if (newFilm.getDescription() != null) oldFilm.setDescription(newFilm.getDescription());
+        if (newFilm.getReleaseDate() != null) oldFilm.setReleaseDate(newFilm.getReleaseDate());
+        if (newFilm.getDuration() != null) oldFilm.setDuration(newFilm.getDuration());
+        return oldFilm;
     }
 
     private long getNextId() {

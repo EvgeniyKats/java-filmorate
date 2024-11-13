@@ -2,9 +2,13 @@ package ru.yandex.practicum.filmorate.model;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.Size;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import ru.yandex.practicum.filmorate.validated.Create;
+import ru.yandex.practicum.filmorate.validated.Update;
 
 import java.time.LocalDate;
 
@@ -12,14 +16,14 @@ import java.time.LocalDate;
 @EqualsAndHashCode(of = "id")
 @Builder(toBuilder = true)
 public class Film {
+    @NotNull(groups = Update.class)
     private Long id;
-    @NotNull
-    @NotBlank
+    @NotBlank(groups = {Create.class})
     private String name;
-    @NotNull
+    @Size(groups = {Create.class, Update.class}, max = 200)
     private String description;
-    @NotNull
+    @NotNull(groups = Create.class)
     private LocalDate releaseDate;
-    @NotNull
+    @Positive(groups = {Create.class, Update.class})
     private Integer duration;
 }

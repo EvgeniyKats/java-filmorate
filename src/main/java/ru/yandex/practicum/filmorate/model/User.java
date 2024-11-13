@@ -1,12 +1,14 @@
 package ru.yandex.practicum.filmorate.model;
 
 import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Past;
+import jakarta.validation.constraints.Pattern;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import org.springframework.lang.NonNull;
+import ru.yandex.practicum.filmorate.validated.Create;
+import ru.yandex.practicum.filmorate.validated.Update;
 
 import java.time.LocalDate;
 
@@ -14,15 +16,16 @@ import java.time.LocalDate;
 @EqualsAndHashCode(of = "email")
 @Builder(toBuilder = true)
 public class User {
+    @NotNull(groups = Update.class)
     private Long id;
-    @NotNull
-    @NotBlank
-    @Email
+    @NotNull(groups = Create.class)
+    @Email(groups = {Create.class, Update.class})
     private String email;
-    @NotNull
-    @NotBlank
+    @NotNull(groups = Create.class)
+    @Pattern(regexp = "\\S+", groups = {Create.class, Update.class})
     private String login;
     private String name;
-    @NonNull
+    @NotNull(groups = Create.class)
+    @Past(groups = {Create.class, Update.class})
     private LocalDate birthday;
 }
