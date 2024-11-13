@@ -12,9 +12,6 @@ import java.time.LocalDate;
 @EqualsAndHashCode(of = "id")
 @Builder(toBuilder = true)
 public class Film {
-    public static final LocalDate MOST_EARLY_RELEASE_DATE =
-            LocalDate.of(1895, 12, 28);
-
     private Long id;
     @NotNull
     @NotBlank

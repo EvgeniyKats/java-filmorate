@@ -12,6 +12,7 @@ import ru.yandex.practicum.filmorate.exception.DuplicateException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 
+import java.time.LocalDate;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -21,6 +22,8 @@ import java.util.Map;
 @RestController
 @RequestMapping("/films")
 public class FilmController {
+    public static final LocalDate MOST_EARLY_RELEASE_DATE =
+            LocalDate.of(1895, 12, 28);
     private final Map<Long, Film> films = new HashMap<>();
 
     @GetMapping
@@ -93,7 +96,7 @@ public class FilmController {
         }
         log.trace("Film прошёл проверку <= 200 символов в description: {}", film.getDescription().length());
 
-        if (film.getReleaseDate().isBefore(Film.MOST_EARLY_RELEASE_DATE)) {
+        if (film.getReleaseDate().isBefore(MOST_EARLY_RELEASE_DATE)) {
             throw new ValidationException("Дата релиза раньше 28 декабря 1895 г.");
         }
         log.trace("Film прошёл проверку на дату релиза <= 28.12.1895: {}.", film.getReleaseDate());

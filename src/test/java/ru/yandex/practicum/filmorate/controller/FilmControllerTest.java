@@ -98,7 +98,7 @@ class FilmControllerTest {
         Film film = Film.builder()
                 .name("Name")
                 .description("Description")
-                .releaseDate(Film.MOST_EARLY_RELEASE_DATE.minusDays(1))
+                .releaseDate(FilmController.MOST_EARLY_RELEASE_DATE.minusDays(1))
                 .duration(60)
                 .build();
         assertThrows(ValidationException.class, () -> filmController.createFilm(film));
