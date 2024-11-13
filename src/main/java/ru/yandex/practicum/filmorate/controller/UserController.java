@@ -73,7 +73,7 @@ public class UserController {
             }
             log.trace("User прошёл проверку на отсутствие id в хранилище.");
             User oldUser = users.get(user.getId());
-            if (!oldUser. getEmail().equals(user.getEmail())) {
+            if (!oldUser.getEmail().equals(user.getEmail())) {
                 for (User u : users.values()) {
                     if (u.getEmail().equals(user.getEmail())) {
                         throw new DuplicateException("Такой Email уже используется");

@@ -11,7 +11,7 @@ import org.springframework.lang.NonNull;
 import java.time.LocalDate;
 
 @Data
-@EqualsAndHashCode(of = "id")
+@EqualsAndHashCode(of = "email")
 @Builder(toBuilder = true)
 public class User {
     private Long id;
