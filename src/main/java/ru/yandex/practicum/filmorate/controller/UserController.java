@@ -75,7 +75,7 @@ public class UserController {
                 throw new ValidationException("В хранилище " + users.keySet() + ", отсутствует id: " + user.getId());
             }
             log.trace("User прошёл проверку на отсутствие id в хранилище.");
-            if (!users.get(user.getId()).getEmail().equals(user.getEmail())) {
+            if (user.getEmail() != null && !users.get(user.getId()).equals(user)) {
                 throwDuplicateIfEmailAlreadyInBase(user);
             }
         } else {

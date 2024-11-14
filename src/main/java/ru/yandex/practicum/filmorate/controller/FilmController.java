@@ -74,7 +74,7 @@ public class FilmController {
                 throw new ValidationException("В хранилище " + films.keySet() + ", отсутствует id: " + film.getId());
             }
             log.trace("Film прошёл проверку на отсутствие id в хранилище.");
-            if (!films.get(film.getId()).getName().equals(film.getName())) {
+            if (film.getName() != null && !films.get(film.getId()).equals(film)) {
                 throwDuplicateIfNameAlreadyInBase(film);
             }
         } else {
