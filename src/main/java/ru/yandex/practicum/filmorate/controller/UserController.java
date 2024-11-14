@@ -58,10 +58,7 @@ public class UserController {
         log.info("Получен PUT запрос /users");
         try {
             validateUser(user, true);
-            user = mergeUserInfo(user);
-            users.put(user.getId(), user);
-            log.info("User {}, был обновлен в хранилище.", user);
-            return user;
+            return mergeUserInfo(user);
         } catch (ValidationException | DuplicateException e) {
             log.warn("Не удалось обновить пользователя {} с ошибкой: {}.", user, e.getMessage());
             throw e;
@@ -97,6 +94,7 @@ public class UserController {
         if (newUser.getBirthday() != null) oldUser.setBirthday(newUser.getBirthday());
         if (newUser.getLogin() != null) oldUser.setLogin(newUser.getLogin());
         if (newUser.getName() != null && !newUser.getName().isBlank()) oldUser.setName(newUser.getName());
+        log.info("User {}, был обновлен в хранилище.", oldUser);
         return oldUser;
     }
 
