@@ -57,10 +57,7 @@ public class FilmController {
         log.info("Получен PUT запрос /films");
         try {
             validateFilm(film, true);
-            film = mergeFilmInfo(film);
-            films.put(film.getId(), film);
-            log.info("Film {}, был обновлен в хранилище.", film);
-            return film;
+            return mergeFilmInfo(film);
         } catch (ValidationException | DuplicateException e) {
             log.warn("Не удалось обновить фильм {} с ошибкой: {}", film, e.getMessage());
             throw e;
@@ -101,6 +98,7 @@ public class FilmController {
         if (newFilm.getDescription() != null) oldFilm.setDescription(newFilm.getDescription());
         if (newFilm.getReleaseDate() != null) oldFilm.setReleaseDate(newFilm.getReleaseDate());
         if (newFilm.getDuration() != null) oldFilm.setDuration(newFilm.getDuration());
+        log.info("Film {}, был обновлен в хранилище.", oldFilm);
         return oldFilm;
     }
 
