@@ -17,7 +17,9 @@ import ru.yandex.practicum.filmorate.validated.Update;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 @Slf4j
 @RestController
@@ -26,6 +28,7 @@ public class FilmController {
     public static final LocalDate MOST_EARLY_RELEASE_DATE =
             LocalDate.of(1895, 12, 28);
     private final Map<Long, Film> films = new HashMap<>();
+    private final Set<Film> filmsSearch = new HashSet<>();
 
     @GetMapping
     public Collection<Film> findAll() {
@@ -44,6 +47,7 @@ public class FilmController {
             log.debug("Был получен id для film: {}", id);
             film.setId(id);
             films.put(id, film);
+            filmsSearch.add(film);
             log.info("Film {}, был добавлен в хранилище.", film);
             return film;
         } catch (ValidationException | DuplicateException e) {
@@ -71,10 +75,10 @@ public class FilmController {
             }
             log.trace("Film прошёл проверку на отсутствие id в хранилище.");
             if (!films.get(film.getId()).getName().equals(film.getName())) {
-                throwDuplicateIfNameAlreadyInBase(film.getName());
+                throwDuplicateIfNameAlreadyInBase(film);
             }
         } else {
-            throwDuplicateIfNameAlreadyInBase(film.getName());
+            throwDuplicateIfNameAlreadyInBase(film);
         }
         log.trace("Film прошёл проверку на дубликат.");
 
@@ -84,11 +88,9 @@ public class FilmController {
         log.trace("Film прошёл проверку на дату релиза <= 28.12.1895: {}.", film.getReleaseDate());
     }
 
-    private void throwDuplicateIfNameAlreadyInBase(String name) throws DuplicateException {
-        for (Film f : films.values()) {
-            if (f.getName().equals(name)) {
-                throw new DuplicateException("Film с названием " + name + " уже содержится в базе.");
-            }
+    private void throwDuplicateIfNameAlreadyInBase(Film film) throws DuplicateException {
+        if (filmsSearch.contains(film)) {
+            throw new DuplicateException("Film с названием " + film.getName() + " уже содержится в базе.");
         }
     }
 

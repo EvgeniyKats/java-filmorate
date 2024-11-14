@@ -16,13 +16,16 @@ import ru.yandex.practicum.filmorate.validated.Update;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 @Slf4j
 @RestController
 @RequestMapping("/users")
 public class UserController {
     private final Map<Long, User> users = new HashMap<>();
+    private final Set<User> usersSearch = new HashSet<>();
 
     @GetMapping
     public Collection<User> findAll() {
@@ -45,6 +48,7 @@ public class UserController {
             log.debug("Был получен id для user: {}", id);
             user.setId(id);
             users.put(id, user);
+            usersSearch.add(user);
             log.info("User {}, был добавлен в хранилище.", user);
             return user;
         } catch (ValidationException | DuplicateException e) {
@@ -72,19 +76,17 @@ public class UserController {
             }
             log.trace("User прошёл проверку на отсутствие id в хранилище.");
             if (!users.get(user.getId()).getEmail().equals(user.getEmail())) {
-                throwDuplicateIfEmailAlreadyInBase(user.getEmail());
+                throwDuplicateIfEmailAlreadyInBase(user);
             }
         } else {
-            throwDuplicateIfEmailAlreadyInBase(user.getEmail());
+            throwDuplicateIfEmailAlreadyInBase(user);
         }
         log.trace("User прошёл проверку на дубликат.");
     }
 
-    private void throwDuplicateIfEmailAlreadyInBase(String email) throws DuplicateException {
-        for (User u : users.values()) {
-            if (u.getEmail().equals(email)) {
-                throw new DuplicateException("Такой Email уже используется " + email);
-            }
+    private void throwDuplicateIfEmailAlreadyInBase(User user) throws DuplicateException {
+        if (usersSearch.contains(user)) {
+            throw new DuplicateException("Такой Email уже используется " + user.getEmail());
         }
     }
 
