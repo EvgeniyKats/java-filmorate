@@ -13,7 +13,7 @@ import ru.yandex.practicum.filmorate.validated.Update;
 import java.time.LocalDate;
 
 @Data
-@EqualsAndHashCode(of = "id")
+@EqualsAndHashCode(of = "name")
 @Builder(toBuilder = true)
 public class Film {
     @NotNull(groups = Update.class)
