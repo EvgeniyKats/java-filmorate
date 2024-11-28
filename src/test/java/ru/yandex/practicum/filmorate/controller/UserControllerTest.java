@@ -5,17 +5,21 @@ import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.filmorate.exception.DuplicateException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.user.UserService;
+import ru.yandex.practicum.filmorate.storage.user.InMemoryUserStorage;
+import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class UserControllerTest {
-    private UserController userController;
+    private UserService userService;
 
     @BeforeEach
     void beforeEach() {
-        userController = new UserController();
+        UserStorage storage = new InMemoryUserStorage();
+        userService = new UserService(storage);
     }
 
     @Test
@@ -26,7 +30,7 @@ class UserControllerTest {
                 .login("Login")
                 .birthday(LocalDate.of(2000, 1, 1))
                 .build();
-        User add = userController.createUser(user);
+        User add = userService.createUser(user);
         assertNotNull(add.getId());
         assertEquals(user, add);
         assertEquals(user.getEmail(), add.getEmail());
@@ -45,8 +49,8 @@ class UserControllerTest {
                     .login("Login")
                     .birthday(LocalDate.of(2000, 1, 1))
                     .build();
-            userController.createUser(user);
-            assertEquals(i + 1, userController.findAll().size());
+            userService.createUser(user);
+            assertEquals(i + 1, userService.findAll().size());
         }
     }
 
@@ -58,9 +62,9 @@ class UserControllerTest {
                 .login("Login")
                 .birthday(LocalDate.of(2000, 1, 1))
                 .build();
-        userController.createUser(user);
+        userService.createUser(user);
 
-        User received = userController.findAll().iterator().next();
+        User received = userService.findAll().iterator().next();
         assertNotNull(received.getId());
         assertEquals(user, received);
         assertEquals(user.getEmail(), received.getEmail());
@@ -76,8 +80,8 @@ class UserControllerTest {
                 .login("Login")
                 .birthday(LocalDate.of(2000, 1, 1))
                 .build();
-        userController.createUser(user);
-        User received = userController.findAll().iterator().next();
+        userService.createUser(user);
+        User received = userService.findAll().iterator().next();
         assertEquals(received.getName(), received.getLogin());
     }
 
@@ -89,8 +93,8 @@ class UserControllerTest {
                 .login("Login")
                 .birthday(LocalDate.of(2000, 1, 1))
                 .build();
-        userController.createUser(user);
-        User received = userController.findAll().iterator().next();
+        userService.createUser(user);
+        User received = userService.findAll().iterator().next();
         assertEquals(received.getName(), received.getLogin());
     }
 
@@ -102,8 +106,8 @@ class UserControllerTest {
                 .login("Login")
                 .birthday(LocalDate.of(2000, 1, 1))
                 .build();
-        assertDoesNotThrow(() -> userController.createUser(user));
-        assertThrows(DuplicateException.class, () -> userController.createUser(user));
+        assertDoesNotThrow(() -> userService.createUser(user));
+        assertThrows(DuplicateException.class, () -> userService.createUser(user));
     }
 
     @Test
@@ -114,14 +118,14 @@ class UserControllerTest {
                 .login("Login")
                 .birthday(LocalDate.of(2000, 1, 1))
                 .build();
-        userController.createUser(user);
+        userService.createUser(user);
         User toUpdate = user.toBuilder()
                 .login("NewLogin")
                 .build();
         assertNotEquals(user.getLogin(), toUpdate.getLogin());
-        userController.updateUser(toUpdate);
+        userService.updateUser(toUpdate);
 
-        User received = userController.findAll().iterator().next();
+        User received = userService.findAll().iterator().next();
         assertEquals(toUpdate.getLogin(), received.getLogin());
     }
 
@@ -133,7 +137,7 @@ class UserControllerTest {
                 .login("Login")
                 .birthday(LocalDate.of(2000, 1, 1))
                 .build();
-        assertThrows(ValidationException.class, () -> userController.updateUser(user));
+        assertThrows(ValidationException.class, () -> userService.updateUser(user));
     }
 
     @Test
@@ -145,7 +149,7 @@ class UserControllerTest {
                 .login("Login")
                 .birthday(LocalDate.of(2000, 1, 1))
                 .build();
-        assertThrows(ValidationException.class, () -> userController.updateUser(user));
+        assertThrows(ValidationException.class, () -> userService.updateUser(user));
     }
 
     @Test
@@ -156,11 +160,11 @@ class UserControllerTest {
                 .login("Login")
                 .birthday(LocalDate.of(2000, 1, 1))
                 .build();
-        userController.createUser(user);
+        userService.createUser(user);
         User toUpdate = user.toBuilder()
                 .email("new@test.ru")
                 .build();
-        assertDoesNotThrow(() -> userController.updateUser(toUpdate));
+        assertDoesNotThrow(() -> userService.updateUser(toUpdate));
     }
 
     @Test
@@ -171,7 +175,7 @@ class UserControllerTest {
                 .login("Login")
                 .birthday(LocalDate.of(2000, 1, 1))
                 .build();
-        user = userController.createUser(user);
+        user = userService.createUser(user);
 
         User anotherUser = User.builder()
                 .email("new@test.ru")
@@ -179,11 +183,11 @@ class UserControllerTest {
                 .login("Login")
                 .birthday(LocalDate.of(2000, 1, 1))
                 .build();
-        userController.createUser(anotherUser);
+        userService.createUser(anotherUser);
 
         User toUpdate = user.toBuilder()
                 .email("new@test.ru")
                 .build();
-        assertThrows(DuplicateException.class, () -> userController.updateUser(toUpdate));
+        assertThrows(DuplicateException.class, () -> userService.updateUser(toUpdate));
     }
 }
