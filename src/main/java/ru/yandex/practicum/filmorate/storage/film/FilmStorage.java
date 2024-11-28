@@ -4,15 +4,20 @@ import ru.yandex.practicum.filmorate.model.Film;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 public interface FilmStorage {
-    Optional<Film> getFilm(long id);
+    Film getFilm(long id);
 
     List<Film> getAllFilms();
 
-    boolean addFilm(Film film);
+    void addFilm(Film film);
 
     Optional<Film> updateFilm(Film film);
 
     void removeFilm(long id);
+
+    boolean isFilmInBaseByFilm(Film film);
+
+    boolean isFilmInBaseById(long id);
 }
