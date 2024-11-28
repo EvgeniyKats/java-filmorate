@@ -9,7 +9,7 @@ import java.util.Map;
 import java.util.Optional;
 
 public class InMemoryFilmStorage implements FilmStorage {
-    Map<Long, Film> filmsData;
+    private final Map<Long, Film> filmsData;
 
     public InMemoryFilmStorage() {
         filmsData = new HashMap<>();
@@ -17,7 +17,7 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     @Override
     public Optional<Film> getFilm(long id) {
-        return Optional.of(filmsData.get(id));
+        return Optional.ofNullable(filmsData.get(id));
     }
 
     @Override
