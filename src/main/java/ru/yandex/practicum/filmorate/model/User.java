@@ -7,8 +7,8 @@ import jakarta.validation.constraints.Pattern;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import ru.yandex.practicum.filmorate.validated.Create;
-import ru.yandex.practicum.filmorate.validated.Update;
+import ru.yandex.practicum.filmorate.validate.Create;
+import ru.yandex.practicum.filmorate.validate.Update;
 
 import java.time.LocalDate;
 

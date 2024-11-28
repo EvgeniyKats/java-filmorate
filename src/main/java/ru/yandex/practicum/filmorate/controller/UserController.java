@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.yandex.practicum.filmorate.exception.DuplicateException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.validated.Create;
-import ru.yandex.practicum.filmorate.validated.Update;
+import ru.yandex.practicum.filmorate.validate.Create;
+import ru.yandex.practicum.filmorate.validate.Update;
 
 import java.util.Collection;
 import java.util.HashMap;
