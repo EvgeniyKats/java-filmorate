@@ -60,19 +60,29 @@ public class UserService {
     }
 
     public List<Long> addFriend(User user, User friend) {
-        if (!userStorage.isUserInBaseById(user.getId())) throw new EntityNotExistException("User", user.getId());
-        if (!userStorage.isUserInBaseById(friend.getId())) throw new EntityNotExistException("Friend", friend.getId());
+        throwIfNoInBase(user, friend);
         user.addFriend(friend.getId());
         friend.addFriend(user.getId());
         return user.getFriends();
     }
 
     public List<Long> removeFriend(User user, User friend) {
-        if (!userStorage.isUserInBaseById(user.getId())) throw new EntityNotExistException("User", user.getId());
-        if (!userStorage.isUserInBaseById(friend.getId())) throw new EntityNotExistException("Friend", friend.getId());
+        throwIfNoInBase(user, friend);
         user.removeFriend(friend.getId());
         friend.removeFriend(user.getId());
         return user.getFriends();
+    }
+
+    public List<Long> getCommonFriends(User user, User friend) {
+        throwIfNoInBase(user, friend);
+        return user.getFriends().stream()
+                .filter(id -> friend.getFriends().contains(id))
+                .toList();
+    }
+
+    private void throwIfNoInBase(User user, User friend) {
+        if (!userStorage.isUserInBaseById(user.getId())) throw new EntityNotExistException("User", user.getId());
+        if (!userStorage.isUserInBaseById(friend.getId())) throw new EntityNotExistException("Friend", friend.getId());
     }
 
     private void validateUser(User user, boolean update) throws ValidationException, DuplicateException {

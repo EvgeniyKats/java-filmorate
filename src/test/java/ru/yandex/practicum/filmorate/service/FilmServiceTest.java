@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.filmorate.exception.custom.DuplicateException;
 import ru.yandex.practicum.filmorate.exception.custom.EntityNotExistException;
 import ru.yandex.practicum.filmorate.exception.custom.IncorrectParameterException;
+import ru.yandex.practicum.filmorate.exception.custom.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.custom.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
@@ -181,7 +182,7 @@ class FilmServiceTest {
                 .releaseDate(LocalDate.of(2000, 1, 1))
                 .duration(60)
                 .build();
-        assertThrows(ValidationException.class, () -> filmService.updateFilm(film));
+        assertThrows(NotFoundException.class, () -> filmService.updateFilm(film));
     }
 
     @Test
@@ -192,7 +193,7 @@ class FilmServiceTest {
                 .releaseDate(LocalDate.of(2000, 1, 1))
                 .duration(60)
                 .build();
-        assertThrows(ValidationException.class, () -> filmService.updateFilm(film));
+        assertThrows(NotFoundException.class, () -> filmService.updateFilm(film));
     }
 
     @Test

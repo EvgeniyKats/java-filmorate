@@ -4,6 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.filmorate.exception.custom.DuplicateException;
 import ru.yandex.practicum.filmorate.exception.custom.EntityNotExistException;
+import ru.yandex.practicum.filmorate.exception.custom.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.custom.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.user.UserService;
@@ -139,7 +140,7 @@ class UserServiceTest {
                 .login("Login")
                 .birthday(LocalDate.of(2000, 1, 1))
                 .build();
-        assertThrows(ValidationException.class, () -> userService.updateUser(user));
+        assertThrows(NotFoundException.class, () -> userService.updateUser(user));
     }
 
     @Test
@@ -151,7 +152,7 @@ class UserServiceTest {
                 .login("Login")
                 .birthday(LocalDate.of(2000, 1, 1))
                 .build();
-        assertThrows(ValidationException.class, () -> userService.updateUser(user));
+        assertThrows(NotFoundException.class, () -> userService.updateUser(user));
     }
 
     @Test
@@ -274,6 +275,74 @@ class UserServiceTest {
         for (User user : all) {
             assertEquals(2, user.getFriends().size());
         }
+    }
+
+    @Test
+    void shouldBeZeroCommonFriends() {
+        User user1 = User.builder()
+                .email("test1@test.ru")
+                .name("Name")
+                .login("Login")
+                .birthday(LocalDate.of(2000, 1, 1))
+                .build();
+        user1 = userService.createUser(user1);
+
+        User user2 = User.builder()
+                .email("test2@test.ru")
+                .name("Name")
+                .login("Login")
+                .birthday(LocalDate.of(2000, 1, 1))
+                .build();
+        user2 = userService.createUser(user2);
+
+
+        User user3 = User.builder()
+                .email("test3@test.ru")
+                .name("Name")
+                .login("Login")
+                .birthday(LocalDate.of(2000, 1, 1))
+                .build();
+        user3 = userService.createUser(user3);
+
+        userService.addFriend(user1, user2);
+
+        List<Long> commonFriends = userService.getCommonFriends(user1, user3);
+        assertEquals(0, commonFriends.size());
+    }
+
+    @Test
+    void shouldBeOneCommonFriends() {
+        User user1 = User.builder()
+                .email("test1@test.ru")
+                .name("Name")
+                .login("Login")
+                .birthday(LocalDate.of(2000, 1, 1))
+                .build();
+        user1 = userService.createUser(user1);
+
+        User user2 = User.builder()
+                .email("test2@test.ru")
+                .name("Name")
+                .login("Login")
+                .birthday(LocalDate.of(2000, 1, 1))
+                .build();
+        user2 = userService.createUser(user2);
+
+
+        User user3 = User.builder()
+                .email("test3@test.ru")
+                .name("Name")
+                .login("Login")
+                .birthday(LocalDate.of(2000, 1, 1))
+                .build();
+        user3 = userService.createUser(user3);
+
+        userService.addFriend(user1, user2);
+        userService.addFriend(user3, user2);
+
+        List<Long> commonFriends = userService.getCommonFriends(user1, user3);
+        assertEquals(1, commonFriends.size());
+        assertEquals(user2.getId(), commonFriends.getFirst());
     }
 
     @Test
