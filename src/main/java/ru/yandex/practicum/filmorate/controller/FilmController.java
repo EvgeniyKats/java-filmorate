@@ -15,7 +15,6 @@ import ru.yandex.practicum.filmorate.validate.Create;
 import ru.yandex.practicum.filmorate.validate.Update;
 
 import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @AllArgsConstructor
@@ -37,7 +36,7 @@ public class FilmController {
     }
 
     @PutMapping
-    public Optional<Film> updateFilm(@Validated(Update.class) @RequestBody Film film) {
+    public Film updateFilm(@Validated(Update.class) @RequestBody Film film) {
         log.info("Получен PUT запрос /films");
         return filmService.updateFilm(film);
     }

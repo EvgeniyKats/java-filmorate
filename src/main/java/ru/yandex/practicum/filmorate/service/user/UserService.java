@@ -3,13 +3,14 @@ package ru.yandex.practicum.filmorate.service.user;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.exception.DuplicateException;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
+import ru.yandex.practicum.filmorate.exception.custom.DuplicateException;
+import ru.yandex.practicum.filmorate.exception.custom.EntityNotExistException;
+import ru.yandex.practicum.filmorate.exception.custom.NotFoundException;
+import ru.yandex.practicum.filmorate.exception.custom.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @Service
@@ -39,7 +40,7 @@ public class UserService {
         }
     }
 
-    public Optional<User> updateUser(User user) {
+    public User updateUser(User user) {
         try {
             validateUser(user, true);
             return userStorage.updateUser(user);
@@ -49,10 +50,35 @@ public class UserService {
         }
     }
 
+    public boolean isUserInStorageById(long id) {
+        return userStorage.isUserInBaseById(id);
+    }
+
+    public List<Long> getFriends(User user) {
+        if (!userStorage.isUserInBaseById(user.getId())) throw new EntityNotExistException("User", user.getId());
+        return user.getFriends();
+    }
+
+    public List<Long> addFriend(User user, User friend) {
+        if (!userStorage.isUserInBaseById(user.getId())) throw new EntityNotExistException("User", user.getId());
+        if (!userStorage.isUserInBaseById(friend.getId())) throw new EntityNotExistException("Friend", friend.getId());
+        user.addFriend(friend.getId());
+        friend.addFriend(user.getId());
+        return user.getFriends();
+    }
+
+    public List<Long> removeFriend(User user, User friend) {
+        if (!userStorage.isUserInBaseById(user.getId())) throw new EntityNotExistException("User", user.getId());
+        if (!userStorage.isUserInBaseById(friend.getId())) throw new EntityNotExistException("Friend", friend.getId());
+        user.removeFriend(friend.getId());
+        friend.removeFriend(user.getId());
+        return user.getFriends();
+    }
+
     private void validateUser(User user, boolean update) throws ValidationException, DuplicateException {
         if (update) {
             if (user.getId() == null || !userStorage.isUserInBaseById(user.getId())) {
-                throw new ValidationException("В хранилище отсутствует id: " + user.getId());
+                throw new NotFoundException("В хранилище отсутствует id: " + user.getId());
             }
             log.trace("User прошёл проверку на отсутствие id в хранилище.");
             User oldUser = userStorage.getUser(user.getId());

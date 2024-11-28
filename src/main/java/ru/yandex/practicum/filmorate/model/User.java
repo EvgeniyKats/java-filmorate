@@ -11,6 +11,8 @@ import ru.yandex.practicum.filmorate.validate.Create;
 import ru.yandex.practicum.filmorate.validate.Update;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @EqualsAndHashCode(of = "email")
@@ -28,4 +30,17 @@ public class User {
     @NotNull(groups = Create.class)
     @Past(groups = {Create.class, Update.class})
     private LocalDate birthday;
+    private final List<Long> friends = new ArrayList<>();
+
+    public List<Long> getFriends() {
+        return new ArrayList<>(friends);
+    }
+
+    public void addFriend(Long id) {
+        friends.add(id);
+    }
+
+    public void removeFriend(Long id) {
+        friends.remove(id);
+    }
 }

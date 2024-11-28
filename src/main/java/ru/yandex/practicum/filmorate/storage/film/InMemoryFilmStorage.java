@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.storage.film;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import ru.yandex.practicum.filmorate.exception.custom.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 
 import java.util.ArrayList;
@@ -9,7 +10,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 
 @Slf4j
@@ -43,18 +43,18 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public Optional<Film> updateFilm(Film newFilm) {
+    public Film updateFilm(Film newFilm) {
         Film oldFilm = filmsData.get(newFilm.getId());
         if (oldFilm == null) {
             log.info("Film {}, отсутствует в хранилище и не был обновлен.", newFilm.getId());
-            return Optional.empty();
+            throw new NotFoundException("Фильм id=" + newFilm.getId() + "отсутствует в хранилище.");
         }
         if (newFilm.getName() != null) oldFilm.setName(newFilm.getName());
         if (newFilm.getDescription() != null) oldFilm.setDescription(newFilm.getDescription());
         if (newFilm.getReleaseDate() != null) oldFilm.setReleaseDate(newFilm.getReleaseDate());
         if (newFilm.getDuration() != null) oldFilm.setDuration(newFilm.getDuration());
         log.info("Film {}, был обновлен в хранилище.", oldFilm);
-        return Optional.of(oldFilm);
+        return oldFilm;
     }
 
     @Override

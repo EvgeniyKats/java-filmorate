@@ -14,9 +14,7 @@ import ru.yandex.practicum.filmorate.service.user.UserService;
 import ru.yandex.practicum.filmorate.validate.Create;
 import ru.yandex.practicum.filmorate.validate.Update;
 
-import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @RestController
@@ -38,7 +36,7 @@ public class UserController {
     }
 
     @PutMapping
-    public Optional<User> updateUser(@Validated(Update.class) @RequestBody User user) {
+    public User updateUser(@Validated(Update.class) @RequestBody User user) {
         log.info("Получен PUT запрос /users");
         return userService.updateUser(user);
     }
