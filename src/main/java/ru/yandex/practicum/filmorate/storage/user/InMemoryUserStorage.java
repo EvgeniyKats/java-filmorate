@@ -40,6 +40,7 @@ public class InMemoryUserStorage implements UserStorage {
         user.setId(id);
         usersData.put(user.getId(), user);
         usersSearch.add(user);
+        log.trace("Пользователь {} добавлен в хранилище.", id);
     }
 
     @Override
@@ -60,6 +61,7 @@ public class InMemoryUserStorage implements UserStorage {
     @Override
     public void removeUser(long id) {
         usersData.remove(id);
+        log.trace("Пользователь {} удалён из хранилища.", id);
     }
 
     @Override

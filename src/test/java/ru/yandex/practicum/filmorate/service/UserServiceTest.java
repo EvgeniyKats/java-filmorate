@@ -66,7 +66,7 @@ class UserServiceTest {
                 .build();
         userService.createUser(user);
 
-        User received = userService.findAll().iterator().next();
+        User received = userService.findAll().getFirst();
         assertNotNull(received.getId());
         assertEquals(user, received);
         assertEquals(user.getEmail(), received.getEmail());
@@ -83,7 +83,7 @@ class UserServiceTest {
                 .birthday(LocalDate.of(2000, 1, 1))
                 .build();
         userService.createUser(user);
-        User received = userService.findAll().iterator().next();
+        User received = userService.findAll().getFirst();
         assertEquals(received.getName(), received.getLogin());
     }
 
@@ -96,7 +96,7 @@ class UserServiceTest {
                 .birthday(LocalDate.of(2000, 1, 1))
                 .build();
         userService.createUser(user);
-        User received = userService.findAll().iterator().next();
+        User received = userService.findAll().getFirst();
         assertEquals(received.getName(), received.getLogin());
     }
 
@@ -127,7 +127,7 @@ class UserServiceTest {
         assertNotEquals(user.getLogin(), toUpdate.getLogin());
         userService.updateUser(toUpdate);
 
-        User received = userService.findAll().iterator().next();
+        User received = userService.findAll().getFirst();
         assertEquals(toUpdate.getLogin(), received.getLogin());
     }
 

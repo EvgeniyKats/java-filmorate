@@ -9,7 +9,6 @@ import ru.yandex.practicum.filmorate.exception.custom.IncorrectParameterExceptio
 import ru.yandex.practicum.filmorate.exception.custom.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.custom.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.user.UserService;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 
@@ -32,36 +31,28 @@ public class FilmService {
     }
 
     public Film createFilm(Film film) {
-        try {
-            validateFilm(film, false);
-            filmStorage.addFilm(film);
-            log.info("Film {}, был добавлен в хранилище.", film);
-            return film;
-        } catch (ValidationException | DuplicateException e) {
-            log.warn("Не удалось создать фильм {} с ошибкой: {}.", film, e.getMessage());
-            throw e;
-        }
+        validateFilm(film, false);
+        filmStorage.addFilm(film);
+        log.info("Film {}, был добавлен в хранилище.", film);
+        return film;
     }
 
     public Film updateFilm(Film film) {
-        try {
-            validateFilm(film, true);
-            return filmStorage.updateFilm(film);
-        } catch (ValidationException | DuplicateException | NotFoundException e) {
-            log.warn("Не удалось обновить фильм {} с ошибкой: {}", film, e.getMessage());
-            throw e;
-        }
+        validateFilm(film, true);
+        return filmStorage.updateFilm(film);
     }
 
     public Film getFilmById(long id) {
         Film film = filmStorage.getFilm(id);
         if (film == null) throw new NotFoundException("Фильм с id=" + id + " отсутствует в хранилище.");
+        log.trace("Фильм прошел проверку на null.");
         return film;
     }
 
     public List<Film> getTopFilms(Integer count) {
         if (count == null) throw new IncorrectParameterException("count", "не может быть null");
         if (count < 0) throw new IncorrectParameterException("count", "не может быть отрицательным");
+        log.trace("Параметр count прошёл проверки на корректность.");
         return filmStorage.getAllFilms().stream()
                 .sorted((a, b) -> b.getFilmLikesByUserId().size() - a.getFilmLikesByUserId().size())
                 .limit(count)
@@ -71,16 +62,18 @@ public class FilmService {
     public List<Long> addFilmLike(Long filmId, Long userId) {
         Film film = filmStorage.getFilm(filmId);
         if (film == null) throw new EntityNotExistException("Film", filmId);
-        if (!userService.isUserInStorageById(userId)) throw new EntityNotExistException("User", userId);
+        if (userService.isUserNotExistInStorageById(userId)) throw new EntityNotExistException("User", userId);
         film.addLike(userId);
+        log.info("Лайк был успешно поставлен Film: {}, User: {}", filmId, userId);
         return film.getFilmLikesByUserId();
     }
 
     public List<Long> removeFilmLike(Long filmId, Long userId) {
         Film film = filmStorage.getFilm(filmId);
         if (film == null) throw new EntityNotExistException("Film", filmId);
-        if (!userService.isUserInStorageById(userId)) throw new EntityNotExistException("User", userId);
+        if (userService.isUserNotExistInStorageById(userId)) throw new EntityNotExistException("User", userId);
         film.removeLike(userId);
+        log.info("Лайк был успешно удалён Film: {}, User: {}", filmId, userId);
         return film.getFilmLikesByUserId();
     }
 

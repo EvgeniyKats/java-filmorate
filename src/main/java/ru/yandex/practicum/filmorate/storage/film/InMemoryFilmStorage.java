@@ -40,6 +40,7 @@ public class InMemoryFilmStorage implements FilmStorage {
         film.setId(id);
         filmsData.put(film.getId(), film);
         filmsSearch.add(film);
+        log.trace("Фильм {} добавлен в хранилище.", id);
     }
 
     @Override
@@ -61,6 +62,7 @@ public class InMemoryFilmStorage implements FilmStorage {
     public void removeFilm(long id) {
         Film film = filmsData.remove(id);
         filmsSearch.remove(film);
+        log.trace("Фильм {} удалён из хранилища.", id);
     }
 
     @Override

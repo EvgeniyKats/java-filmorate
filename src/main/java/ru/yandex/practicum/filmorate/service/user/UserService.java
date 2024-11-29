@@ -10,7 +10,9 @@ import ru.yandex.practicum.filmorate.exception.custom.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Slf4j
 @Service
@@ -25,44 +27,36 @@ public class UserService {
     }
 
     public User createUser(User user) {
-        try {
-            validateUser(user, false);
-            if (user.getName() == null || user.getName().isBlank()) {
-                user.setName(user.getLogin());
-                log.trace("Пользователь не указал имя. Для отображения используется логин.");
-            }
-            userStorage.addUser(user);
-            log.info("User {}, был добавлен в хранилище.", user);
-            return user;
-        } catch (ValidationException | DuplicateException e) {
-            log.warn("Не удалось создать пользователя {} с ошибкой: {}.", user, e.getMessage());
-            throw e;
+        validateUser(user, false);
+        if (user.getName() == null || user.getName().isBlank()) {
+            user.setName(user.getLogin());
+            log.trace("Пользователь не указал имя. Для отображения используется логин.");
         }
+        userStorage.addUser(user);
+        log.info("User {}, был добавлен в хранилище.", user);
+        return user;
     }
 
     public User updateUser(User user) {
-        try {
-            validateUser(user, true);
-            return userStorage.updateUser(user);
-        } catch (ValidationException | DuplicateException e) {
-            log.warn("Не удалось обновить пользователя {} с ошибкой: {}.", user, e.getMessage());
-            throw e;
-        }
+        validateUser(user, true);
+        return userStorage.updateUser(user);
     }
 
     public User getUserById(long id) {
         User user = userStorage.getUser(id);
         if (user == null) throw new NotFoundException("Пользователь с id=" + id + " отсутствует в хранилище.");
+        log.trace("Пользователь прошёл проверку на null, getUserById().");
         return user;
     }
 
-    public boolean isUserInStorageById(long id) {
-        return userStorage.isUserInBaseById(id);
+    public boolean isUserNotExistInStorageById(long id) {
+        return !userStorage.isUserInBaseById(id);
     }
 
     public List<User> getFriends(Long userId) {
         User user = userStorage.getUser(userId);
         if (user == null) throw new EntityNotExistException("User", userId);
+        log.trace("Пользователь прошёл проверку на null, getFriends().");
         return user.getFriendsId().stream()
                 .map(userStorage::getUser)
                 .toList();
@@ -73,8 +67,10 @@ public class UserService {
         if (user == null) throw new EntityNotExistException("User", userId);
         User friend = userStorage.getUser(friendId);
         if (friend == null) throw new EntityNotExistException("Friend", friendId);
+        log.trace("User, friend прошли проверку addFriend().");
         user.addFriend(friendId);
         friend.addFriend(userId);
+        log.trace("Успешное добавление в друзья.");
         return user.getFriendsId();
     }
 
@@ -83,8 +79,10 @@ public class UserService {
         if (user == null) throw new EntityNotExistException("User", userId);
         User friend = userStorage.getUser(friendId);
         if (friend == null) throw new EntityNotExistException("Friend", friendId);
+        log.trace("User, friend прошли проверку removeFriend().");
         user.removeFriend(friendId);
         friend.removeFriend(userId);
+        log.trace("Успешное удаление из друзей.");
         return user.getFriendsId();
     }
 
@@ -93,8 +91,10 @@ public class UserService {
         if (user == null) throw new EntityNotExistException("User", userId);
         User friend = userStorage.getUser(friendId);
         if (friend == null) throw new EntityNotExistException("Friend", friendId);
+        log.trace("User, friend прошли проверку getCommonFriends().");
+        Set<Long> friendsIdOfFriend = new HashSet<>(friend.getFriendsId());
         return user.getFriendsId().stream()
-                .filter(id -> friend.getFriendsId().contains(id))
+                .filter(friendsIdOfFriend::contains)
                 .map(userStorage::getUser)
                 .toList();
     }
