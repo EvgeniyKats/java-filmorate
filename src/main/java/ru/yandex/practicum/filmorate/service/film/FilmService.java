@@ -53,6 +53,12 @@ public class FilmService {
         }
     }
 
+    public Film getFilmById(long id) {
+        Film film = filmStorage.getFilm(id);
+        if (film == null) throw new NotFoundException("Фильм с id=" + id + " отсутствует в хранилище.");
+        return film;
+    }
+
     public List<Film> getTopFilms(Integer count) {
         if (count == null) throw new IncorrectParameterException("count", "не может быть null");
         if (count < 0) throw new IncorrectParameterException("count", "не может быть отрицательным");
@@ -62,17 +68,19 @@ public class FilmService {
                 .toList();
     }
 
-    public List<Long> addFilmLike(Film film, User user) {
-        if (!filmStorage.isFilmInBaseById(film.getId())) throw new EntityNotExistException("Film", film.getId());
-        if (!userService.isUserInStorageById(user.getId())) throw new EntityNotExistException("User", user.getId());
-        film.addLike(user.getId());
+    public List<Long> addFilmLike(Long filmId, Long userId) {
+        Film film = filmStorage.getFilm(filmId);
+        if (film == null) throw new EntityNotExistException("Film", filmId);
+        if (!userService.isUserInStorageById(userId)) throw new EntityNotExistException("User", userId);
+        film.addLike(userId);
         return film.getFilmLikesByUserId();
     }
 
-    public List<Long> removeFilmLike(Film film, User user) {
-        if (!filmStorage.isFilmInBaseById(film.getId())) throw new EntityNotExistException("Film", film.getId());
-        if (!userService.isUserInStorageById(user.getId())) throw new EntityNotExistException("User", user.getId());
-        film.removeLike(user.getId());
+    public List<Long> removeFilmLike(Long filmId, Long userId) {
+        Film film = filmStorage.getFilm(filmId);
+        if (film == null) throw new EntityNotExistException("Film", filmId);
+        if (!userService.isUserInStorageById(userId)) throw new EntityNotExistException("User", userId);
+        film.removeLike(userId);
         return film.getFilmLikesByUserId();
     }
 

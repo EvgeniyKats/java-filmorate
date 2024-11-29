@@ -227,7 +227,7 @@ class FilmServiceTest {
                 .build();
         userService.createUser(user);
 
-        List<Long> likes = filmService.addFilmLike(film, user);
+        List<Long> likes = filmService.addFilmLike(film.getId(), user.getId());
         assertEquals(1, likes.size());
         assertEquals(1, film.getFilmLikesByUserId().size());
     }
@@ -250,8 +250,8 @@ class FilmServiceTest {
                 .birthday(LocalDate.of(2000, 1, 1))
                 .build();
         userService.createUser(user);
-        filmService.addFilmLike(film, user);
-        List<Long> likes = filmService.addFilmLike(film, user);
+        filmService.addFilmLike(film.getId(), user.getId());
+        List<Long> likes = filmService.addFilmLike(film.getId(), user.getId());
         assertEquals(1, likes.size());
     }
 
@@ -283,8 +283,8 @@ class FilmServiceTest {
                 .build();
         userService.createUser(user2);
 
-        filmService.addFilmLike(film, user1);
-        List<Long> likes = filmService.addFilmLike(film, user2);
+        filmService.addFilmLike(film.getId(), user1.getId());
+        List<Long> likes = filmService.addFilmLike(film.getId(), user2.getId());
         assertEquals(2, likes.size());
     }
 
@@ -307,7 +307,7 @@ class FilmServiceTest {
                 .build();
 
         Film finalFilm = film;
-        assertThrows(EntityNotExistException.class, () -> filmService.addFilmLike(finalFilm, user));
+        assertThrows(EntityNotExistException.class, () -> filmService.addFilmLike(finalFilm.getId(), user.getId()));
         assertEquals(0, film.getFilmLikesByUserId().size());
     }
 
@@ -330,7 +330,7 @@ class FilmServiceTest {
                 .build();
 
         Film finalFilm = film;
-        assertThrows(EntityNotExistException.class, () -> filmService.removeFilmLike(finalFilm, user));
+        assertThrows(EntityNotExistException.class, () -> filmService.removeFilmLike(finalFilm.getId(), user.getId()));
         assertEquals(0, film.getFilmLikesByUserId().size());
     }
 
@@ -353,8 +353,8 @@ class FilmServiceTest {
                 .build();
         userService.createUser(user);
 
-        filmService.addFilmLike(film, user);
-        List<Long> likes = filmService.removeFilmLike(film, user);
+        filmService.addFilmLike(film.getId(), user.getId());
+        List<Long> likes = filmService.removeFilmLike(film.getId(), user.getId());
         assertEquals(0, likes.size());
     }
 
@@ -377,7 +377,7 @@ class FilmServiceTest {
                 .build();
         userService.createUser(user);
 
-        assertThrows(EntityNotExistException.class, () -> filmService.addFilmLike(film, user));
+        assertThrows(EntityNotExistException.class, () -> filmService.addFilmLike(film.getId(), user.getId()));
         assertEquals(0, film.getFilmLikesByUserId().size());
     }
 
@@ -400,7 +400,7 @@ class FilmServiceTest {
                 .build();
         userService.createUser(user);
 
-        assertThrows(EntityNotExistException.class, () -> filmService.removeFilmLike(film, user));
+        assertThrows(EntityNotExistException.class, () -> filmService.removeFilmLike(film.getId(), user.getId()));
         assertEquals(0, film.getFilmLikesByUserId().size());
     }
 

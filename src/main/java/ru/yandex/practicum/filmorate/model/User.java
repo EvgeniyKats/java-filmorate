@@ -30,17 +30,17 @@ public class User {
     @NotNull(groups = Create.class)
     @Past(groups = {Create.class, Update.class})
     private LocalDate birthday;
-    private final List<Long> friends = new ArrayList<>();
+    private final List<Long> friendsId = new ArrayList<>();
 
-    public List<Long> getFriends() {
-        return new ArrayList<>(friends);
+    public List<Long> getFriendsId() {
+        return new ArrayList<>(friendsId);
     }
 
     public void addFriend(Long id) {
-        friends.add(id);
+        friendsId.add(id);
     }
 
     public void removeFriend(Long id) {
-        friends.remove(id);
+        friendsId.remove(id);
     }
 }

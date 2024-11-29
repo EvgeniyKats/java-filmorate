@@ -3,11 +3,14 @@ package ru.yandex.practicum.filmorate.controller;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.film.FilmService;
@@ -29,6 +32,16 @@ public class FilmController {
         return filmService.findAll();
     }
 
+    @GetMapping("/{id}")
+    public Film getFilmById(@PathVariable Long id) {
+        return filmService.getFilmById(id);
+    }
+
+    @GetMapping("/popular")
+    public List<Film> getTopFilms(@RequestParam(defaultValue = "10") Integer count) {
+        return filmService.getTopFilms(count);
+    }
+
     @PostMapping
     public Film createFilm(@Validated(Create.class) @RequestBody Film film) {
         log.info("Получен POST запрос /films");
@@ -39,5 +52,17 @@ public class FilmController {
     public Film updateFilm(@Validated(Update.class) @RequestBody Film film) {
         log.info("Получен PUT запрос /films");
         return filmService.updateFilm(film);
+    }
+
+    @PutMapping("/{id}/like/{userId}")
+    public List<Long> addLike(@PathVariable Long id,
+                              @PathVariable Long userId) {
+        return filmService.addFilmLike(id, userId);
+    }
+
+    @DeleteMapping("/{id}/like/{userId}")
+    public List<Long> removeLike(@PathVariable Long id,
+                              @PathVariable Long userId) {
+        return filmService.removeFilmLike(id, userId);
     }
 }

@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.filmorate.exception.custom.DuplicateException;
 import ru.yandex.practicum.filmorate.exception.custom.EntityNotExistException;
 import ru.yandex.practicum.filmorate.exception.custom.NotFoundException;
-import ru.yandex.practicum.filmorate.exception.custom.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.user.UserService;
 import ru.yandex.practicum.filmorate.storage.user.InMemoryUserStorage;
@@ -203,7 +202,7 @@ class UserServiceTest {
                 .birthday(LocalDate.of(2000, 1, 1))
                 .build();
         user = userService.createUser(user);
-        assertEquals(0, user.getFriends().size());
+        assertEquals(0, user.getFriendsId().size());
     }
 
     @Test
@@ -224,14 +223,14 @@ class UserServiceTest {
                 .build();
         user2 = userService.createUser(user2);
 
-        userService.addFriend(user1, user2);
+        userService.addFriend(user1.getId(), user2.getId());
 
-        assertEquals(1, user2.getFriends().size());
-        assertEquals(1, user1.getFriends().size());
+        assertEquals(1, user2.getFriendsId().size());
+        assertEquals(1, user1.getFriendsId().size());
 
         List<User> all = userService.findAll();
         for (User user : all) {
-            assertEquals(1, user.getFriends().size());
+            assertEquals(1, user.getFriendsId().size());
         }
     }
 
@@ -262,18 +261,18 @@ class UserServiceTest {
                 .build();
         user3 = userService.createUser(user3);
 
-        userService.addFriend(user1, user2);
-        userService.addFriend(user1, user3);
-        userService.addFriend(user2, user3);
+        userService.addFriend(user1.getId(), user2.getId());
+        userService.addFriend(user1.getId(), user3.getId());
+        userService.addFriend(user2.getId(), user3.getId());
 
 
-        assertEquals(2, user1.getFriends().size());
-        assertEquals(2, user2.getFriends().size());
-        assertEquals(2, user3.getFriends().size());
+        assertEquals(2, user1.getFriendsId().size());
+        assertEquals(2, user2.getFriendsId().size());
+        assertEquals(2, user3.getFriendsId().size());
 
         List<User> all = userService.findAll();
         for (User user : all) {
-            assertEquals(2, user.getFriends().size());
+            assertEquals(2, user.getFriendsId().size());
         }
     }
 
@@ -304,9 +303,9 @@ class UserServiceTest {
                 .build();
         user3 = userService.createUser(user3);
 
-        userService.addFriend(user1, user2);
+        userService.addFriend(user1.getId(), user2.getId());
 
-        List<Long> commonFriends = userService.getCommonFriends(user1, user3);
+        List<User> commonFriends = userService.getCommonFriends(user1.getId(), user3.getId());
         assertEquals(0, commonFriends.size());
     }
 
@@ -337,12 +336,12 @@ class UserServiceTest {
                 .build();
         user3 = userService.createUser(user3);
 
-        userService.addFriend(user1, user2);
-        userService.addFriend(user3, user2);
+        userService.addFriend(user1.getId(), user2.getId());
+        userService.addFriend(user3.getId(), user2.getId());
 
-        List<Long> commonFriends = userService.getCommonFriends(user1, user3);
+        List<User> commonFriends = userService.getCommonFriends(user1.getId(), user3.getId());
         assertEquals(1, commonFriends.size());
-        assertEquals(user2.getId(), commonFriends.getFirst());
+        assertEquals(user2.getId(), commonFriends.getFirst().getId());
     }
 
     @Test
@@ -364,9 +363,9 @@ class UserServiceTest {
                 .build();
 
         User finalUser = user1;
-        assertThrows(EntityNotExistException.class, () -> userService.addFriend(finalUser, user2));
-        assertEquals(0, user1.getFriends().size());
-        assertEquals(0, user2.getFriends().size());
+        assertThrows(EntityNotExistException.class, () -> userService.addFriend(finalUser.getId(), user2.getId()));
+        assertEquals(0, user1.getFriendsId().size());
+        assertEquals(0, user2.getFriendsId().size());
     }
 
     @Test
@@ -388,9 +387,9 @@ class UserServiceTest {
         user2 = userService.createUser(user2);
 
         User finalUser2 = user2;
-        assertThrows(EntityNotExistException.class, () -> userService.addFriend(user1, finalUser2));
-        assertEquals(0, user1.getFriends().size());
-        assertEquals(0, user2.getFriends().size());
+        assertThrows(EntityNotExistException.class, () -> userService.addFriend(user1.getId(), finalUser2.getId()));
+        assertEquals(0, user1.getFriendsId().size());
+        assertEquals(0, user2.getFriendsId().size());
     }
 
     @Test
@@ -420,19 +419,19 @@ class UserServiceTest {
                 .birthday(LocalDate.of(2000, 1, 1))
                 .build();
 
-        userService.addFriend(user1, user2);
+        userService.addFriend(user1.getId(), user2.getId());
 
         User finalUser = user1;
-        assertThrows(EntityNotExistException.class, () -> userService.removeFriend(finalUser, user3));
-        assertThrows(EntityNotExistException.class, () -> userService.removeFriend(user3, finalUser));
+        assertThrows(EntityNotExistException.class, () -> userService.removeFriend(finalUser.getId(), user3.getId()));
+        assertThrows(EntityNotExistException.class, () -> userService.removeFriend(user3.getId(), finalUser.getId()));
 
-        assertEquals(1, user1.getFriends().size());
-        assertEquals(1, user2.getFriends().size());
-        assertEquals(0, user3.getFriends().size());
+        assertEquals(1, user1.getFriendsId().size());
+        assertEquals(1, user2.getFriendsId().size());
+        assertEquals(0, user3.getFriendsId().size());
 
         List<User> all = userService.findAll();
         for (User user : all) {
-            assertEquals(1, user.getFriends().size());
+            assertEquals(1, user.getFriendsId().size());
         }
     }
 
@@ -453,15 +452,15 @@ class UserServiceTest {
                 .birthday(LocalDate.of(2000, 1, 1))
                 .build();
         user2 = userService.createUser(user2);
-        userService.addFriend(user1, user2);
-        userService.removeFriend(user1, user2);
+        userService.addFriend(user1.getId(), user2.getId());
+        userService.removeFriend(user1.getId(), user2.getId());
         for (User user : userService.findAll()) {
-            assertEquals(0, user.getFriends().size());
+            assertEquals(0, user.getFriendsId().size());
         }
-        userService.addFriend(user1, user2);
-        userService.removeFriend(user2, user1);
+        userService.addFriend(user1.getId(), user2.getId());
+        userService.removeFriend(user2.getId(), user1.getId());
         for (User user : userService.findAll()) {
-            assertEquals(0, user.getFriends().size());
+            assertEquals(0, user.getFriendsId().size());
         }
     }
 }
