@@ -60,7 +60,8 @@ public class InMemoryUserStorage implements UserStorage {
 
     @Override
     public void removeUser(long id) {
-        usersData.remove(id);
+        User user = usersData.remove(id);
+        usersSearch.remove(user);
         log.trace("Пользователь {} удалён из хранилища.", id);
     }
 
