@@ -2,7 +2,6 @@ package ru.yandex.practicum.filmorate.storage.film;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.exception.custom.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 
 import java.util.ArrayList;
@@ -49,10 +48,6 @@ public class InMemoryFilmStorage implements FilmStorage {
     @Override
     public Film updateFilm(Film newFilm) {
         Film oldFilm = filmsData.get(newFilm.getId());
-        if (oldFilm == null) {
-            log.info("Film {}, отсутствует в хранилище и не был обновлен.", newFilm.getId());
-            throw new NotFoundException("Фильм id=" + newFilm.getId() + "отсутствует в хранилище.");
-        }
         if (newFilm.getName() != null) oldFilm.setName(newFilm.getName());
         if (newFilm.getDescription() != null) oldFilm.setDescription(newFilm.getDescription());
         if (newFilm.getReleaseDate() != null) oldFilm.setReleaseDate(newFilm.getReleaseDate());

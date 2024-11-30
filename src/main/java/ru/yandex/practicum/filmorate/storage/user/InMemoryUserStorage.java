@@ -2,7 +2,6 @@ package ru.yandex.practicum.filmorate.storage.user;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.exception.custom.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.ArrayList;
@@ -46,10 +45,6 @@ public class InMemoryUserStorage implements UserStorage {
     @Override
     public User updateUser(User newUser) {
         User oldUser = usersData.get(newUser.getId());
-        if (oldUser == null) {
-            log.info("User {}, отсутствует в хранилище и не был обновлен.", newUser.getId());
-            throw new NotFoundException("Пользователь id=" + newUser.getId() + " отсутствует в хранилище.");
-        }
         if (newUser.getEmail() != null) oldUser.setEmail(newUser.getEmail());
         if (newUser.getBirthday() != null) oldUser.setBirthday(newUser.getBirthday());
         if (newUser.getLogin() != null) oldUser.setLogin(newUser.getLogin());
