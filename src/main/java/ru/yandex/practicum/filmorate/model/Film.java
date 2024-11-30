@@ -6,7 +6,6 @@ import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 import lombok.Builder;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import ru.yandex.practicum.filmorate.validate.Create;
 import ru.yandex.practicum.filmorate.validate.Update;
 
@@ -17,7 +16,6 @@ import java.util.List;
 import java.util.Set;
 
 @Data
-@EqualsAndHashCode(of = "name")
 @Builder(toBuilder = true)
 public class Film {
     @NotNull(groups = Update.class)

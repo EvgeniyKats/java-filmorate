@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.custom.DuplicateException;
 import ru.yandex.practicum.filmorate.exception.custom.EntityNotExistException;
 import ru.yandex.practicum.filmorate.exception.custom.NotFoundException;
-import ru.yandex.practicum.filmorate.exception.custom.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
@@ -27,7 +26,7 @@ public class UserService {
     }
 
     public User createUser(User user) {
-        validateUser(user, false);
+        throwDuplicateIfEmailAlreadyInStorage(user, false);
         if (user.getName() == null || user.getName().isBlank()) {
             user.setName(user.getLogin());
             log.trace("Пользователь не указал имя. Для отображения используется логин.");
@@ -38,7 +37,8 @@ public class UserService {
     }
 
     public User updateUser(User user) {
-        validateUser(user, true);
+        throwNotFoundIfUserAbsentInStorage(user);
+        throwDuplicateIfEmailAlreadyInStorage(user, true);
         return userStorage.updateUser(user);
     }
 
@@ -99,25 +99,19 @@ public class UserService {
                 .toList();
     }
 
-    private void validateUser(User user, boolean update) throws ValidationException, DuplicateException {
-        if (update) {
-            if (user.getId() == null || !userStorage.isUserInBaseById(user.getId())) {
-                throw new NotFoundException("В хранилище отсутствует id: " + user.getId());
-            }
-            log.trace("User прошёл проверку на отсутствие id в хранилище.");
-            User oldUser = userStorage.getUser(user.getId());
-            if (user.getEmail() != null && !user.equals(oldUser)) {
-                throwDuplicateIfEmailAlreadyInBase(user);
-            }
-        } else {
-            throwDuplicateIfEmailAlreadyInBase(user);
+    private void throwNotFoundIfUserAbsentInStorage(User user) {
+        if (user.getId() == null || !userStorage.isUserInBaseById(user.getId())) {
+            throw new NotFoundException("В хранилище отсутствует id: " + user.getId());
         }
-        log.trace("User прошёл проверку на дубликат.");
+        log.trace("User прошёл проверку на отсутствие id в хранилище.");
     }
 
-    private void throwDuplicateIfEmailAlreadyInBase(User user) throws DuplicateException {
-        if (userStorage.isUserInBaseByUser(user)) {
-            throw new DuplicateException("Такой Email уже используется " + user.getEmail());
+    private void throwDuplicateIfEmailAlreadyInStorage(User user, boolean update) {
+        if (!update || user.getEmail() != null && !user.equals(userStorage.getUser(user.getId()))) {
+            if (userStorage.isUserInBaseByUser(user)) {
+                throw new DuplicateException("Такой Email уже используется " + user.getEmail());
+            }
         }
+        log.trace("User прошёл проверку на дубликат.");
     }
 }

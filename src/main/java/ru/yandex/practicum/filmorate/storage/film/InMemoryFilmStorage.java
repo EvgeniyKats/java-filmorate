@@ -7,20 +7,16 @@ import ru.yandex.practicum.filmorate.model.Film;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 @Slf4j
 @Component
 public class InMemoryFilmStorage implements FilmStorage {
     private final Map<Long, Film> filmsData;
-    private final Set<Film> filmsSearch;
 
     public InMemoryFilmStorage() {
         filmsData = new HashMap<>();
-        filmsSearch = new HashSet<>();
     }
 
     @Override
@@ -39,7 +35,6 @@ public class InMemoryFilmStorage implements FilmStorage {
         log.debug("Был получен id для film: {}", id);
         film.setId(id);
         filmsData.put(film.getId(), film);
-        filmsSearch.add(film);
         log.trace("Фильм {} добавлен в хранилище.", id);
     }
 
@@ -60,14 +55,8 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     @Override
     public void removeFilm(long id) {
-        Film film = filmsData.remove(id);
-        filmsSearch.remove(film);
+        filmsData.remove(id);
         log.trace("Фильм {} удалён из хранилища.", id);
-    }
-
-    @Override
-    public boolean isFilmInBaseByFilm(Film film) {
-        return filmsSearch.contains(film);
     }
 
     @Override

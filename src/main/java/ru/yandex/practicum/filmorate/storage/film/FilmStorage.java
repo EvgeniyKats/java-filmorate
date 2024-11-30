@@ -15,7 +15,5 @@ public interface FilmStorage {
 
     void removeFilm(long id);
 
-    boolean isFilmInBaseByFilm(Film film);
-
     boolean isFilmInBaseById(long id);
 }

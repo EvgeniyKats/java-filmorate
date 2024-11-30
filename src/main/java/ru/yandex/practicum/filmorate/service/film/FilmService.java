@@ -3,7 +3,6 @@ package ru.yandex.practicum.filmorate.service.film;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.exception.custom.DuplicateException;
 import ru.yandex.practicum.filmorate.exception.custom.EntityNotExistException;
 import ru.yandex.practicum.filmorate.exception.custom.IncorrectParameterException;
 import ru.yandex.practicum.filmorate.exception.custom.NotFoundException;
@@ -31,14 +30,15 @@ public class FilmService {
     }
 
     public Film createFilm(Film film) {
-        validateFilm(film, false);
+        validateRelease(film);
         filmStorage.addFilm(film);
         log.info("Film {}, был добавлен в хранилище.", film);
         return film;
     }
 
     public Film updateFilm(Film film) {
-        validateFilm(film, true);
+        throwNotFoundIfFilmAbsentInStorage(film);
+        validateRelease(film);
         return filmStorage.updateFilm(film);
     }
 
@@ -77,28 +77,17 @@ public class FilmService {
         return film.getFilmLikesByUserId();
     }
 
-    private void validateFilm(Film film, boolean update) throws ValidationException, DuplicateException {
-        if (update) {
-            if (film.getId() == null || !filmStorage.isFilmInBaseById(film.getId())) {
-                throw new NotFoundException("В хранилище отсутствует id: " + film.getId());
-            }
-            log.trace("Film прошёл проверку на отсутствие id в хранилище.");
-            Film oldFilm = filmStorage.getFilm(film.getId());
-            if (film.getName() != null && !(film.equals(oldFilm))) throwDuplicateIfNameAlreadyInBase(film);
-        } else {
-            throwDuplicateIfNameAlreadyInBase(film);
+    private void throwNotFoundIfFilmAbsentInStorage(Film film) {
+        if (film.getId() == null || !filmStorage.isFilmInBaseById(film.getId())) {
+            throw new NotFoundException("В хранилище отсутствует id: " + film.getId());
         }
-        log.trace("Film прошёл проверку на дубликат.");
+        log.trace("Film прошёл проверку на отсутствие id в хранилище.");
+    }
 
+    private void validateRelease(Film film) {
         if (film.getReleaseDate() != null && film.getReleaseDate().isBefore(MOST_EARLY_RELEASE_DATE)) {
             throw new ValidationException("Дата релиза раньше 28 декабря 1895 г.");
         }
         log.trace("Film прошёл проверку на дату релиза <= 28.12.1895: {}.", film.getReleaseDate());
-    }
-
-    private void throwDuplicateIfNameAlreadyInBase(Film film) throws DuplicateException {
-        if (filmStorage.isFilmInBaseByFilm(film)) {
-            throw new DuplicateException("Film с названием " + film.getName() + " уже содержится в базе.");
-        }
     }
 }

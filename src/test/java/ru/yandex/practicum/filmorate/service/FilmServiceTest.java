@@ -85,19 +85,6 @@ class FilmServiceTest {
     }
 
     @Test
-    void shouldThrowsDuplicateExceptionIfCreateSameFilm() {
-        Film film = Film.builder()
-                .name("Name")
-                .description("Description")
-                .releaseDate(LocalDate.of(2000, 1, 1))
-                .duration(60)
-                .build();
-        filmService.createFilm(film);
-        assertEquals(1, filmService.findAll().size());
-        assertThrows(DuplicateException.class, () -> filmService.createFilm(film));
-    }
-
-    @Test
     void shouldFailedCreateWithBadReleaseDate() {
         Film film = Film.builder()
                 .name("Name")
@@ -149,28 +136,6 @@ class FilmServiceTest {
                     .build();
             assertDoesNotThrow(() -> filmService.updateFilm(finalFilm));
         }
-    }
-
-    @Test
-    void shouldFailedUpdateWithRepeatNameByOtherFilm() {
-        Film film = Film.builder()
-                .name("Name")
-                .description("Description")
-                .releaseDate(LocalDate.of(2000, 1, 1))
-                .duration(60)
-                .build();
-        filmService.createFilm(film);
-
-        film = film.toBuilder()
-                .name("Name2")
-                .build();
-        filmService.createFilm(film);
-        assertEquals(2, filmService.findAll().size());
-
-        Film another = film.toBuilder()
-                .name("Name")
-                .build();
-        assertThrows(DuplicateException.class, () -> filmService.updateFilm(another));
     }
 
     @Test
