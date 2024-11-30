@@ -53,10 +53,7 @@ public class FilmService {
         if (count == null) throw new IncorrectParameterException("count", "не может быть null");
         if (count < 0) throw new IncorrectParameterException("count", "не может быть отрицательным");
         log.trace("Параметр count прошёл проверки на корректность.");
-        return filmStorage.getAllFilms().stream()
-                .sorted((a, b) -> b.getFilmLikesByUserId().size() - a.getFilmLikesByUserId().size())
-                .limit(count)
-                .toList();
+        return filmStorage.getTopFilms(count);
     }
 
     public List<Long> addFilmLike(Long filmId, Long userId) {

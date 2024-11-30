@@ -391,6 +391,13 @@ class FilmServiceTest {
     }
 
     @Test
+    void shouldGetTop10FilmsButRequestIs1000() {
+        addSomeFilms(10);
+        assertEquals(10, filmService.getTopFilms(1000).size());
+        assertEquals(10, filmService.getTopFilms(1000).getFirst().getCountLikes());
+    }
+
+    @Test
     void shouldThrowExceptionNullCount() {
         assertThrows(IncorrectParameterException.class, () -> filmService.getTopFilms(null));
     }

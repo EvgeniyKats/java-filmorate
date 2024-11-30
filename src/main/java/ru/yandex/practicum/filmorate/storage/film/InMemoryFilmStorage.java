@@ -9,14 +9,18 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 @Slf4j
 @Component
 public class InMemoryFilmStorage implements FilmStorage {
     private final Map<Long, Film> filmsData;
+    private final Set<Film> topFilms;
 
     public InMemoryFilmStorage() {
         filmsData = new HashMap<>();
+        topFilms = new TreeSet<>((a,b) -> b.getFilmLikesByUserId().size() - a.getFilmLikesByUserId().size());
     }
 
     @Override
@@ -30,11 +34,19 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
+    public List<Film> getTopFilms(int count) {
+        return topFilms.stream()
+                .limit(count)
+                .toList();
+    }
+
+    @Override
     public void addFilm(Film film) {
         long id = getNextId();
         log.debug("Был получен id для film: {}", id);
         film.setId(id);
         filmsData.put(film.getId(), film);
+        topFilms.add(film);
         log.trace("Фильм {} добавлен в хранилище.", id);
     }
 
@@ -55,7 +67,8 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     @Override
     public void removeFilm(long id) {
-        filmsData.remove(id);
+        Film film = filmsData.remove(id);
+        topFilms.remove(film);
         log.trace("Фильм {} удалён из хранилища.", id);
     }
 
