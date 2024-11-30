@@ -6,6 +6,7 @@ import ru.yandex.practicum.filmorate.exception.custom.DuplicateException;
 import ru.yandex.practicum.filmorate.exception.custom.EntityNotExistException;
 import ru.yandex.practicum.filmorate.exception.custom.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.user.SimpleUserService;
 import ru.yandex.practicum.filmorate.service.user.UserService;
 import ru.yandex.practicum.filmorate.storage.user.InMemoryUserStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
@@ -15,13 +16,13 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class UserServiceTest {
+class SimpleUserServiceTest {
     private UserService userService;
 
     @BeforeEach
     void beforeEach() {
         UserStorage storage = new InMemoryUserStorage();
-        userService = new UserService(storage);
+        userService = new SimpleUserService(storage);
     }
 
     @Test

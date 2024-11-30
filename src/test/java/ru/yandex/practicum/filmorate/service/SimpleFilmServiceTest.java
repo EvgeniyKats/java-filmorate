@@ -9,6 +9,8 @@ import ru.yandex.practicum.filmorate.exception.custom.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.film.FilmService;
+import ru.yandex.practicum.filmorate.service.film.SimpleFilmService;
+import ru.yandex.practicum.filmorate.service.user.SimpleUserService;
 import ru.yandex.practicum.filmorate.service.user.UserService;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.film.InMemoryFilmStorage;
@@ -20,7 +22,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class FilmServiceTest {
+class SimpleFilmServiceTest {
     private FilmService filmService;
     private UserService userService;
 
@@ -28,8 +30,8 @@ class FilmServiceTest {
     void beforeEach() {
         FilmStorage filmStorage = new InMemoryFilmStorage();
         UserStorage userStorage = new InMemoryUserStorage();
-        userService = new UserService(userStorage);
-        filmService = new FilmService(filmStorage, userStorage);
+        userService = new SimpleUserService(userStorage);
+        filmService = new SimpleFilmService(filmStorage, userStorage);
     }
 
     @Test
@@ -88,7 +90,7 @@ class FilmServiceTest {
         Film film = Film.builder()
                 .name("Name")
                 .description("Description")
-                .releaseDate(FilmService.MOST_EARLY_RELEASE_DATE.minusDays(1))
+                .releaseDate(SimpleFilmService.MOST_EARLY_RELEASE_DATE.minusDays(1))
                 .duration(60)
                 .build();
         assertThrows(ValidationException.class, () -> filmService.createFilm(film));
