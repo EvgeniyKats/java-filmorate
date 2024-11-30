@@ -49,10 +49,6 @@ public class UserService {
         return user;
     }
 
-    public boolean isUserNotExistInStorageById(long id) {
-        return !userStorage.isUserInBaseById(id);
-    }
-
     public List<User> getFriends(Long userId) {
         User user = userStorage.getUser(userId);
         if (user == null) throw new EntityNotExistException("User", userId);
@@ -100,7 +96,7 @@ public class UserService {
     }
 
     private void throwNotFoundIfUserAbsentInStorage(User user) {
-        if (user.getId() == null || !userStorage.isUserInBaseById(user.getId())) {
+        if (user.getId() == null || userStorage.isUserNotExistInStorageById(user.getId())) {
             throw new NotFoundException("В хранилище отсутствует id: " + user.getId());
         }
         log.trace("User прошёл проверку на отсутствие id в хранилище.");
@@ -108,7 +104,7 @@ public class UserService {
 
     private void throwDuplicateIfEmailAlreadyInStorage(User user, boolean update) {
         if (!update || user.getEmail() != null && !user.equals(userStorage.getUser(user.getId()))) {
-            if (userStorage.isUserInBaseByUser(user)) {
+            if (userStorage.isUserInStorageByUser(user)) {
                 throw new DuplicateException("Такой Email уже используется " + user.getEmail());
             }
         }

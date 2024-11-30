@@ -15,7 +15,7 @@ public interface UserStorage {
 
     void removeUser(long id);
 
-    boolean isUserInBaseByUser(User user);
+    boolean isUserInStorageByUser(User user);
 
-    boolean isUserInBaseById(long id);
+    boolean isUserNotExistInStorageById(long id);
 }

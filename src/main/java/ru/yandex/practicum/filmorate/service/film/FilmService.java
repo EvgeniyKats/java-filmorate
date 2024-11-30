@@ -8,8 +8,8 @@ import ru.yandex.practicum.filmorate.exception.custom.IncorrectParameterExceptio
 import ru.yandex.practicum.filmorate.exception.custom.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.custom.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.service.user.UserService;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -21,7 +21,7 @@ public class FilmService {
     public static final LocalDate MOST_EARLY_RELEASE_DATE =
             LocalDate.of(1895, 12, 28);
     private final FilmStorage filmStorage;
-    private final UserService userService;
+    private final UserStorage userStorage;
 
     public List<Film> findAll() {
         List<Film> result = filmStorage.getAllFilms();
@@ -59,7 +59,7 @@ public class FilmService {
     public List<Long> addFilmLike(Long filmId, Long userId) {
         Film film = filmStorage.getFilm(filmId);
         if (film == null) throw new EntityNotExistException("Film", filmId);
-        if (userService.isUserNotExistInStorageById(userId)) throw new EntityNotExistException("User", userId);
+        if (userStorage.isUserNotExistInStorageById(userId)) throw new EntityNotExistException("User", userId);
         film.addLike(userId);
         log.info("Лайк был успешно поставлен Film: {}, User: {}", filmId, userId);
         return film.getFilmLikesByUserId();
@@ -68,14 +68,14 @@ public class FilmService {
     public List<Long> removeFilmLike(Long filmId, Long userId) {
         Film film = filmStorage.getFilm(filmId);
         if (film == null) throw new EntityNotExistException("Film", filmId);
-        if (userService.isUserNotExistInStorageById(userId)) throw new EntityNotExistException("User", userId);
+        if (userStorage.isUserNotExistInStorageById(userId)) throw new EntityNotExistException("User", userId);
         film.removeLike(userId);
         log.info("Лайк был успешно удалён Film: {}, User: {}", filmId, userId);
         return film.getFilmLikesByUserId();
     }
 
     private void throwNotFoundIfFilmAbsentInStorage(Film film) {
-        if (film.getId() == null || !filmStorage.isFilmInBaseById(film.getId())) {
+        if (film.getId() == null || !filmStorage.isFilmInStorageById(film.getId())) {
             throw new NotFoundException("В хранилище отсутствует id: " + film.getId());
         }
         log.trace("Film прошёл проверку на отсутствие id в хранилище.");

@@ -15,7 +15,7 @@ public interface FilmStorage {
 
     void removeFilm(long id);
 
-    boolean isFilmInBaseById(long id);
+    boolean isFilmInStorageById(long id);
 
     List<Film> getTopFilms(int count);
 }

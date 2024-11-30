@@ -2,7 +2,6 @@ package ru.yandex.practicum.filmorate.service;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import ru.yandex.practicum.filmorate.exception.custom.DuplicateException;
 import ru.yandex.practicum.filmorate.exception.custom.EntityNotExistException;
 import ru.yandex.practicum.filmorate.exception.custom.IncorrectParameterException;
 import ru.yandex.practicum.filmorate.exception.custom.NotFoundException;
@@ -30,7 +29,7 @@ class FilmServiceTest {
         FilmStorage filmStorage = new InMemoryFilmStorage();
         UserStorage userStorage = new InMemoryUserStorage();
         userService = new UserService(userStorage);
-        filmService = new FilmService(filmStorage, userService);
+        filmService = new FilmService(filmStorage, userStorage);
     }
 
     @Test

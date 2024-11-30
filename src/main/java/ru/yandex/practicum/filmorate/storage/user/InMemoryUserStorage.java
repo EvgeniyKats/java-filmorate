@@ -66,13 +66,13 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public boolean isUserInBaseByUser(User user) {
+    public boolean isUserInStorageByUser(User user) {
         return usersSearch.contains(user);
     }
 
     @Override
-    public boolean isUserInBaseById(long id) {
-        return usersData.containsKey(id);
+    public boolean isUserNotExistInStorageById(long id) {
+        return !usersData.containsKey(id);
     }
 
     private long getNextId() {
