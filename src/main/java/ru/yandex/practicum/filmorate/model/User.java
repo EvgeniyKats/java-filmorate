@@ -7,10 +7,12 @@ import jakarta.validation.constraints.Pattern;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import ru.yandex.practicum.filmorate.validated.Create;
-import ru.yandex.practicum.filmorate.validated.Update;
+import ru.yandex.practicum.filmorate.validate.Create;
+import ru.yandex.practicum.filmorate.validate.Update;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @EqualsAndHashCode(of = "email")
@@ -28,4 +30,17 @@ public class User {
     @NotNull(groups = Create.class)
     @Past(groups = {Create.class, Update.class})
     private LocalDate birthday;
+    private final List<Long> friendsId = new ArrayList<>();
+
+    public List<Long> getFriendsId() {
+        return new ArrayList<>(friendsId);
+    }
+
+    public void addFriend(Long id) {
+        friendsId.add(id);
+    }
+
+    public void removeFriend(Long id) {
+        friendsId.remove(id);
+    }
 }

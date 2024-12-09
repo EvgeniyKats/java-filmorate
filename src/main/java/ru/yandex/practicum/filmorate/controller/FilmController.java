@@ -1,114 +1,77 @@
 package ru.yandex.practicum.filmorate.controller;
 
+import jakarta.validation.constraints.Min;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import ru.yandex.practicum.filmorate.exception.DuplicateException;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.validated.Create;
-import ru.yandex.practicum.filmorate.validated.Update;
+import ru.yandex.practicum.filmorate.service.film.FilmService;
+import ru.yandex.practicum.filmorate.validate.Create;
+import ru.yandex.practicum.filmorate.validate.Update;
 
-import java.time.LocalDate;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.List;
 
 @Slf4j
+@AllArgsConstructor
 @RestController
 @RequestMapping("/films")
 public class FilmController {
-    public static final LocalDate MOST_EARLY_RELEASE_DATE =
-            LocalDate.of(1895, 12, 28);
-    private final Map<Long, Film> films = new HashMap<>();
-    private final Set<Film> filmsSearch = new HashSet<>();
+    private final FilmService filmService;
 
     @GetMapping
-    public Collection<Film> findAll() {
+    public List<Film> findAll() {
         log.info("Получен GET запрос /films");
-        Collection<Film> result = films.values();
-        log.debug("Текущий список фильмов: {}.", result);
-        return result;
+        return filmService.findAll();
+    }
+
+    @GetMapping("/{id}")
+    public Film getFilmById(@PathVariable Long id) {
+        log.info("Получен GET запрос /films/{}", id);
+        return filmService.getFilmById(id);
+    }
+
+    @GetMapping("/popular")
+    public List<Film> getTopFilms(
+            @Min(0) @RequestParam(defaultValue = "10") Integer count) {
+        log.info("Получен GET запрос /films/popular?count={}", count);
+        return filmService.getTopFilms(count);
     }
 
     @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
     public Film createFilm(@Validated(Create.class) @RequestBody Film film) {
         log.info("Получен POST запрос /films");
-        try {
-            validateFilm(film, false);
-            long id = getNextId();
-            log.debug("Был получен id для film: {}", id);
-            film.setId(id);
-            films.put(id, film);
-            filmsSearch.add(film);
-            log.info("Film {}, был добавлен в хранилище.", film);
-            return film;
-        } catch (ValidationException | DuplicateException e) {
-            log.warn("Не удалось создать фильм {} с ошибкой: {}.", film, e.getMessage());
-            throw e;
-        }
+        return filmService.createFilm(film);
     }
 
     @PutMapping
     public Film updateFilm(@Validated(Update.class) @RequestBody Film film) {
         log.info("Получен PUT запрос /films");
-        try {
-            validateFilm(film, true);
-            return mergeFilmInfo(film);
-        } catch (ValidationException | DuplicateException e) {
-            log.warn("Не удалось обновить фильм {} с ошибкой: {}", film, e.getMessage());
-            throw e;
-        }
+        return filmService.updateFilm(film);
     }
 
-    private void validateFilm(Film film, boolean update) throws ValidationException, DuplicateException {
-        if (update) {
-            if (!films.containsKey(film.getId())) {
-                throw new ValidationException("В хранилище " + films.keySet() + ", отсутствует id: " + film.getId());
-            }
-            log.trace("Film прошёл проверку на отсутствие id в хранилище.");
-            if (film.getName() != null && !films.get(film.getId()).equals(film)) {
-                throwDuplicateIfNameAlreadyInBase(film);
-            }
-        } else {
-            throwDuplicateIfNameAlreadyInBase(film);
-        }
-        log.trace("Film прошёл проверку на дубликат.");
-
-        if (film.getReleaseDate() != null && film.getReleaseDate().isBefore(MOST_EARLY_RELEASE_DATE)) {
-            throw new ValidationException("Дата релиза раньше 28 декабря 1895 г.");
-        }
-        log.trace("Film прошёл проверку на дату релиза <= 28.12.1895: {}.", film.getReleaseDate());
+    @PutMapping("/{id}/like/{userId}")
+    public List<Long> addLike(@PathVariable Long id,
+                              @PathVariable Long userId) {
+        log.info("Получен PUT запрос /films/{}/like/{}", id, userId);
+        return filmService.addFilmLike(id, userId);
     }
 
-    private void throwDuplicateIfNameAlreadyInBase(Film film) throws DuplicateException {
-        if (filmsSearch.contains(film)) {
-            throw new DuplicateException("Film с названием " + film.getName() + " уже содержится в базе.");
-        }
-    }
-
-    private Film mergeFilmInfo(Film newFilm) {
-        Film oldFilm = films.get(newFilm.getId());
-        if (newFilm.getName() != null) oldFilm.setName(newFilm.getName());
-        if (newFilm.getDescription() != null) oldFilm.setDescription(newFilm.getDescription());
-        if (newFilm.getReleaseDate() != null) oldFilm.setReleaseDate(newFilm.getReleaseDate());
-        if (newFilm.getDuration() != null) oldFilm.setDuration(newFilm.getDuration());
-        log.info("Film {}, был обновлен в хранилище.", oldFilm);
-        return oldFilm;
-    }
-
-    private long getNextId() {
-        long id = films.keySet().stream()
-                .mapToLong(value -> value)
-                .max()
-                .orElse(0);
-        return ++id;
+    @DeleteMapping("/{id}/like/{userId}")
+    public List<Long> removeLike(@PathVariable Long id,
+                                 @PathVariable Long userId) {
+        log.info("Получен DELETE запрос /films/{}/like/{}", id, userId);
+        return filmService.removeFilmLike(id, userId);
     }
 }
