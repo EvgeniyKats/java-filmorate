@@ -16,7 +16,7 @@ import java.util.Set;
 @Slf4j
 @Service
 @AllArgsConstructor
-public class SimpleUserService implements UserService {
+public class UserServiceImplement implements UserService {
     private final UserStorage userStorage;
 
     @Override

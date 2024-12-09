@@ -3,14 +3,13 @@ package ru.yandex.practicum.filmorate.service;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.filmorate.exception.custom.EntityNotExistException;
-import ru.yandex.practicum.filmorate.exception.custom.IncorrectParameterException;
 import ru.yandex.practicum.filmorate.exception.custom.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.custom.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.film.FilmService;
-import ru.yandex.practicum.filmorate.service.film.SimpleFilmService;
-import ru.yandex.practicum.filmorate.service.user.SimpleUserService;
+import ru.yandex.practicum.filmorate.service.film.FilmServiceImplement;
+import ru.yandex.practicum.filmorate.service.user.UserServiceImplement;
 import ru.yandex.practicum.filmorate.service.user.UserService;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.film.InMemoryFilmStorage;
@@ -22,7 +21,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class SimpleFilmServiceTest {
+class FilmServiceImplementTest {
     private FilmService filmService;
     private UserService userService;
 
@@ -30,8 +29,8 @@ class SimpleFilmServiceTest {
     void beforeEach() {
         FilmStorage filmStorage = new InMemoryFilmStorage();
         UserStorage userStorage = new InMemoryUserStorage();
-        userService = new SimpleUserService(userStorage);
-        filmService = new SimpleFilmService(filmStorage, userStorage);
+        userService = new UserServiceImplement(userStorage);
+        filmService = new FilmServiceImplement(filmStorage, userStorage);
     }
 
     @Test
@@ -90,7 +89,7 @@ class SimpleFilmServiceTest {
         Film film = Film.builder()
                 .name("Name")
                 .description("Description")
-                .releaseDate(SimpleFilmService.MOST_EARLY_RELEASE_DATE.minusDays(1))
+                .releaseDate(FilmServiceImplement.MOST_EARLY_RELEASE_DATE.minusDays(1))
                 .duration(60)
                 .build();
         assertThrows(ValidationException.class, () -> filmService.createFilm(film));
@@ -396,16 +395,6 @@ class SimpleFilmServiceTest {
         addSomeFilms(10);
         assertEquals(10, filmService.getTopFilms(1000).size());
         assertEquals(10, filmService.getTopFilms(1000).getFirst().getCountLikes());
-    }
-
-    @Test
-    void shouldThrowExceptionNullCount() {
-        assertThrows(IncorrectParameterException.class, () -> filmService.getTopFilms(null));
-    }
-
-    @Test
-    void shouldThrowExceptionNegativeCount() {
-        assertThrows(IncorrectParameterException.class, () -> filmService.getTopFilms(-1));
     }
 
     private void addSomeFilms(int count) {

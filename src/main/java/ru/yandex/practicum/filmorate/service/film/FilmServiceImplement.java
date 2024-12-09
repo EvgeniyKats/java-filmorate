@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.custom.EntityNotExistException;
-import ru.yandex.practicum.filmorate.exception.custom.IncorrectParameterException;
 import ru.yandex.practicum.filmorate.exception.custom.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.custom.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -17,7 +16,7 @@ import java.util.List;
 @Slf4j
 @Service
 @AllArgsConstructor
-public class SimpleFilmService implements FilmService {
+public class FilmServiceImplement implements FilmService {
     public static final LocalDate MOST_EARLY_RELEASE_DATE =
             LocalDate.of(1895, 12, 28);
     private final FilmStorage filmStorage;
@@ -55,8 +54,6 @@ public class SimpleFilmService implements FilmService {
 
     @Override
     public List<Film> getTopFilms(Integer count) {
-        if (count == null) throw new IncorrectParameterException("count", "не может быть null");
-        if (count < 0) throw new IncorrectParameterException("count", "не может быть отрицательным");
         log.trace("Параметр count прошёл проверки на корректность.");
         return filmStorage.getTopFilms(count);
     }
