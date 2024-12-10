@@ -8,9 +8,9 @@
 ```sql
 SELECT f.film_id,
        f.name,
-	   f.description,
-	   CAST(f.release AS date),
-	   f.duration,
+       f.description,
+       CAST(f.release AS date),
+       f.duration,
        g.name,
        r.name	   
 FROM film AS f
@@ -23,8 +23,8 @@ INNER JOIN rating AS r ON f.rating_id = rating.rating_id;
 ```sql
 SELECT u.user_id,
        u.login,
-	   u.name,
-	   CAST(u.birthday AS date),
+       u.name,
+       CAST(u.birthday AS date),
        e.email_address	   
 FROM user AS u
 INNER JOIN email AS e ON u.user_id = e.user_id;
@@ -48,7 +48,7 @@ FROM user_friend AS uf
 WHERE user_id = [A_ID] AND friend_id IN (SELECT friend_id 
                                          FROM user_friend 
                                          WHERE user_id = [B_ID]
-										 );
+					);
 ```
 ### Исходный скрипт quickdatabasediagrams.com
 ```
