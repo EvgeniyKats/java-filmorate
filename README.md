@@ -56,7 +56,7 @@ film
 -
 film_id bigint PK
 name varchar
-description char(200)
+description varchar(200)
 release date
 duration integer
 rating_id varchar FK >- rating.rating_id
@@ -65,15 +65,10 @@ rating_id varchar FK >- rating.rating_id
 user
 -
 user_id bigint PK
+email_address varchar
 login varchar
 name varchar
 birthday date
-
-
-email
--
-email_address varchar PK
-user_id bigint UNIQUE FK - user.user_id
 
 
 rating
