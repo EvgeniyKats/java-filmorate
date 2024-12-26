@@ -28,7 +28,9 @@ public class Film {
     private LocalDate releaseDate;
     @Positive(groups = {Create.class, Update.class})
     private Integer duration;
+    private RatingMPA ratingMPA;
     private final Set<Long> filmLikesByUserId = new HashSet<>();
+    private final Set<Genre> genres = new HashSet<>();
 
     public long getCountLikes() {
         return filmLikesByUserId.size();
