@@ -4,9 +4,9 @@ logging.level:
 spring:
   sql:
     init:
-      mode=always
+      mode: ALWAYS
   datasource:
-    url=jdbc:h2:file:./db/filmorate
-    driverClassName=org.h2.Driver
-    username=sa
-    password=password
+    url: jdbc:h2:file:./db/filmorate
+    driverClassName: org.h2.Driver
+    username: sa
+    password: password
