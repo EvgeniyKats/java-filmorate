@@ -7,21 +7,22 @@ import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.storage.BaseRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class GenreDbStorage extends BaseRepository<Genre> implements GenreStorage {
-    private static final String FIND_ALL_QUERY = "SELECT * FROM genre";
-    private static final String FIND_BY_ID_QUERY = "SELECT * FROM genre WHERE id = ?";
-    private static final String INSERT_QUERY = "INSERT INTO genre(name) VALUES (?) returning id";
-    private static final String UPDATE_QUERY = "UPDATE genre SET name = ? WHERE id = ?";
-    private static final String DELETE_QUERY = "DELETE genre WHERE id = ?";
+    private static final String FIND_ALL_QUERY = "SELECT * FROM genre;";
+    private static final String FIND_BY_ID_QUERY = "SELECT * FROM genre WHERE genre_id = ?;";
+    private static final String INSERT_QUERY = "INSERT INTO genre (name) VALUES (?)";
+    private static final String UPDATE_QUERY = "UPDATE genre SET name = ? WHERE genre_id = ?";
+    private static final String DELETE_QUERY = "DELETE genre WHERE genre_id = ?";
 
     public GenreDbStorage(JdbcTemplate jdbc, RowMapper<Genre> mapper) {
         super(jdbc, mapper);
     }
 
     @Override
-    public Genre getGenre(long id) {
+    public Optional<Genre> getGenre(int id) {
         return findOne(FIND_BY_ID_QUERY, id);
     }
 
@@ -31,31 +32,32 @@ public class GenreDbStorage extends BaseRepository<Genre> implements GenreStorag
     }
 
     @Override
-    public void addGenre(Genre genre) {
-        insert(INSERT_QUERY,
-                genre.getName());
+    public Genre addGenre(Genre genre) {
+        int id = insert(INSERT_QUERY, Integer.class, genre.getName());
+        genre.setId(id);
+        return genre;
     }
 
     @Override
     public Genre updateGenre(Genre genre) {
         update(UPDATE_QUERY,
-                genre.getId(),
-                genre.getName());
+                genre.getName(),
+                genre.getId());
         return genre;
     }
 
     @Override
-    public void removeGenre(long id) {
-        delete(DELETE_QUERY, id);
+    public boolean removeGenre(int id) {
+        return delete(DELETE_QUERY, id);
     }
 
     @Override
-    public boolean isGenreInStorageById(long id) {
+    public boolean isGenreInStorageById(int id) {
         return findOne(FIND_BY_ID_QUERY, id) != null;
     }
 
     @Override
-    public boolean isGenreNotExistInStorageById(long id) {
+    public boolean isGenreNotExistInStorageById(int id) {
         return findOne(FIND_BY_ID_QUERY, id) == null;
     }
 }

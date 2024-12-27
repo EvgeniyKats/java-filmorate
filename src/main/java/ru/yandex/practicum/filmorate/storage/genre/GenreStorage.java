@@ -3,19 +3,20 @@ package ru.yandex.practicum.filmorate.storage.genre;
 import ru.yandex.practicum.filmorate.model.Genre;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface GenreStorage {
-    Genre getGenre(long id);
+    Optional<Genre> getGenre(int id);
 
     List<Genre> getAllGenres();
 
-    void addGenre(Genre genre);
+    Genre addGenre(Genre genre);
 
     Genre updateGenre(Genre genre);
 
-    void removeGenre(long id);
+    boolean removeGenre(int id);
 
-    boolean isGenreInStorageById(long id);
+    boolean isGenreInStorageById(int id);
 
-    boolean isGenreNotExistInStorageById(long id);
+    boolean isGenreNotExistInStorageById(int id);
 }
