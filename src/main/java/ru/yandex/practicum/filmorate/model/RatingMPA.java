@@ -1,15 +1,9 @@
 package ru.yandex.practicum.filmorate.model;
 
-public enum RatingMPA {
-    NO_DATA,
-    G,
-    PG,
-    PG_13,
-    R,
-    NC_17;
+import lombok.Data;
 
-    @Override
-    public String toString() {
-        return name().replace("_", "-");
-    }
+@Data
+public class RatingMPA {
+    private int id;
+    private String name;
 }

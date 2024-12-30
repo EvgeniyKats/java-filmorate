@@ -1,2 +1,4 @@
-package ru.yandex.practicum.filmorate.storage.like;public class FilmLikeDbStorage {
+package ru.yandex.practicum.filmorate.storage.like;
+
+public class FilmLikeDbStorage {
 }

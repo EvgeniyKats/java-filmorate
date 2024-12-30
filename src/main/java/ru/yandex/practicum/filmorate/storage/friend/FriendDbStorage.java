@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.storage.user.friends;
+package ru.yandex.practicum.filmorate.storage.friend;
 
-public class FriendsDbStorage {
+public class FriendDbStorage {
 }

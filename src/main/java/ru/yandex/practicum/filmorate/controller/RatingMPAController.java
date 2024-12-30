@@ -1,2 +1,4 @@
-package ru.yandex.practicum.filmorate.controller;public class RatingMPAController {
+package ru.yandex.practicum.filmorate.controller;
+
+public class RatingMPAController {
 }

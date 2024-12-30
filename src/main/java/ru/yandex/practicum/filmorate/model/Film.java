@@ -30,7 +30,7 @@ public class Film {
     private Integer duration;
     private RatingMPA ratingMPA;
     private final Set<Long> filmLikesByUserId = new HashSet<>();
-    private final Set<Genre> genres = new HashSet<>();
+    private final Set<Long> genres = new HashSet<>();
 
     public long getCountLikes() {
         return filmLikesByUserId.size();
@@ -46,5 +46,13 @@ public class Film {
 
     public List<Long> getFilmLikesByUserId() {
         return new ArrayList<>(filmLikesByUserId);
+    }
+
+    public void addGenre(long id) {
+        genres.add(id);
+    }
+
+    public void removeGenre(long id) {
+        genres.remove(id);
     }
 }

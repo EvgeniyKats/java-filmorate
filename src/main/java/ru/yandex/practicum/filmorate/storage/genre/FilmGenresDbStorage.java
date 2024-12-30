@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.storage.film.genre;
+package ru.yandex.practicum.filmorate.storage.genre;
 
 public class FilmGenresDbStorage {
 }

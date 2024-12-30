@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.storage.mapper;
+package ru.yandex.practicum.filmorate.mapper;
 
-public class FilmLikeRowMapper {
+public class FilmLikeMapper {
 }
