@@ -59,13 +59,13 @@ name varchar
 description varchar(200)
 release date
 duration integer
-rating_id varchar FK >- rating.rating_id
+rating_id integer FK >- rating.rating_id
 
 
-user
+users
 -
 user_id bigint PK
-email_address varchar
+email_address varchar UNIQUE
 login varchar
 name varchar
 birthday date
@@ -73,7 +73,7 @@ birthday date
 
 rating
 -
-rating_id integer
+rating_id integer PK
 name varchar
 
 
@@ -92,14 +92,14 @@ genre_id integer FK >- genre.genre_id
 user_friend
 -
 id bigint PK
-user_id bigint FK >- user.user_id
-friend_id bigint FK >- user.user_id
+user_id bigint FK >- users.user_id
+friend_id bigint FK >- users.user_id
 
 
 film_like
 -
 id bigint PK
 film_id bigint FK >- film.film_id
-user_id bigint FK >- user.user_id
+user_id bigint FK >- users.user_id
 ```
 
