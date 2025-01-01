@@ -29,9 +29,8 @@ public class GenreServiceImplement implements GenreService {
 
     @Override
     public GenreDto getGenreById(int id) {
-        return genreStorage.getGenre(id)
-                .map(GenreMapper::mapToGenreDto)
-                .orElseThrow(() -> new NotFoundException("Жанр не найден с ID: " + id));
+        Genre genre = genreStorage.getGenre(id).orElseThrow(() -> new NotFoundException("Жанр не найден с ID: " + id));
+        return GenreMapper.mapToGenreDto(genre);
     }
 
     @Override

@@ -4,7 +4,7 @@ CREATE TABLE IF NOT EXISTS film (
     description varchar(200) NOT NULL,
     release date NOT NULL,
     duration integer NOT NULL,
-    rating_mpa_id varchar NOT NULL,
+    rating_mpa_id integer NOT NULL,
     CONSTRAINT pk_film PRIMARY KEY (
         film_id
      )
