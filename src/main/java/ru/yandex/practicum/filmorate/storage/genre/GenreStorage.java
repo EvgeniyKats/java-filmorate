@@ -15,8 +15,4 @@ public interface GenreStorage {
     Genre updateGenre(Genre genre);
 
     boolean removeGenre(int id);
-
-    boolean isGenreInStorageById(int id);
-
-    boolean isGenreNotExistInStorageById(int id);
 }

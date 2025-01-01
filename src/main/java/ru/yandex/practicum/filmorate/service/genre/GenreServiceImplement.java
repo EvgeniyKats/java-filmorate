@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.dto.genre.CreateGenreRequest;
-import ru.yandex.practicum.filmorate.dto.genre.GenreDTO;
+import ru.yandex.practicum.filmorate.dto.genre.GenreDto;
 import ru.yandex.practicum.filmorate.dto.genre.UpdateGenreRequest;
 import ru.yandex.practicum.filmorate.exception.custom.NotFoundException;
 import ru.yandex.practicum.filmorate.mapper.GenreMapper;
@@ -20,7 +20,7 @@ public class GenreServiceImplement implements GenreService {
     private final GenreStorage genreStorage;
 
     @Override
-    public List<GenreDTO> getAll() {
+    public List<GenreDto> getAll() {
         return genreStorage.getAllGenres()
                 .stream()
                 .map(GenreMapper::mapToGenreDto)
@@ -28,21 +28,21 @@ public class GenreServiceImplement implements GenreService {
     }
 
     @Override
-    public GenreDTO getGenreById(int id) {
+    public GenreDto getGenreById(int id) {
         return genreStorage.getGenre(id)
                 .map(GenreMapper::mapToGenreDto)
                 .orElseThrow(() -> new NotFoundException("Жанр не найден с ID: " + id));
     }
 
     @Override
-    public GenreDTO createGenre(CreateGenreRequest request) {
+    public GenreDto createGenre(CreateGenreRequest request) {
         Genre genre = GenreMapper.mapToGenre(request);
         genre = genreStorage.addGenre(genre);
         return GenreMapper.mapToGenreDto(genre);
     }
 
     @Override
-    public GenreDTO updateGenre(int id, UpdateGenreRequest request) {
+    public GenreDto updateGenre(int id, UpdateGenreRequest request) {
         Genre genre = genreStorage.getGenre(id)
                 .orElseThrow(() -> new NotFoundException("Жанр не найден с ID: " + id));
         GenreMapper.updateGenreFields(genre, request);
@@ -51,7 +51,7 @@ public class GenreServiceImplement implements GenreService {
     }
 
     @Override
-    public GenreDTO deleteGenre(int id) {
+    public GenreDto deleteGenre(int id) {
         Genre genre = genreStorage.getGenre(id)
                 .orElseThrow(() -> new NotFoundException("Жанр не найден с ID: " + id));
         genreStorage.removeGenre(id);

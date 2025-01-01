@@ -4,10 +4,10 @@ import lombok.AllArgsConstructor;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.RatingMPA;
+import ru.yandex.practicum.filmorate.model.RatingMpa;
 import ru.yandex.practicum.filmorate.storage.genre.FilmGenresStorage;
 import ru.yandex.practicum.filmorate.storage.like.FilmLikesStorage;
-import ru.yandex.practicum.filmorate.storage.ratingMPA.RatingMPAStorage;
+import ru.yandex.practicum.filmorate.storage.ratingmpa.RatingMpaStorage;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -18,7 +18,7 @@ import java.util.Date;
 @Component
 @AllArgsConstructor
 public class FilmRowMapper implements RowMapper<Film> {
-    private final RatingMPAStorage ratingMPAStorage;
+    private final RatingMpaStorage ratingMPAStorage;
     private final FilmGenresStorage filmGenresStorage;
     private final FilmLikesStorage filmLikesStorage;
 
@@ -29,7 +29,7 @@ public class FilmRowMapper implements RowMapper<Film> {
         String description = rs.getString("description");
         LocalDate release = convertDateToLocalDate(rs.getDate("release"));
         int duration = rs.getInt("duration");
-        RatingMPA ratingMPA = ratingMPAStorage.getRatingMPAByFilmId(id);
+        RatingMpa ratingMPA = ratingMPAStorage.getRatingMPAByFilmId(id);
 
         Film result = Film.builder()
                 .id(id)
@@ -37,7 +37,7 @@ public class FilmRowMapper implements RowMapper<Film> {
                 .description(description)
                 .releaseDate(release)
                 .duration(duration)
-                .ratingMPA(ratingMPA)
+                .ratingMpa(ratingMPA)
                 .build();
         fillFilmGenres(result);
         fillFilmLikes(result);

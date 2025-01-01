@@ -50,14 +50,4 @@ public class GenreDbStorage extends BaseRepository<Genre> implements GenreStorag
     public boolean removeGenre(int id) {
         return delete(DELETE_QUERY, id);
     }
-
-    @Override
-    public boolean isGenreInStorageById(int id) {
-        return findOne(FIND_BY_ID_QUERY, id) != null;
-    }
-
-    @Override
-    public boolean isGenreNotExistInStorageById(int id) {
-        return findOne(FIND_BY_ID_QUERY, id) == null;
-    }
 }

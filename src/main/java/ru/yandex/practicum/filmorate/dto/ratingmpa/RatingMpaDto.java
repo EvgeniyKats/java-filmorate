@@ -1,11 +1,11 @@
-package ru.yandex.practicum.filmorate.dto.genre;
+package ru.yandex.practicum.filmorate.dto.ratingmpa;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
-public class GenreDTO {
+public class RatingMpaDto {
     @NotNull
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private int id;

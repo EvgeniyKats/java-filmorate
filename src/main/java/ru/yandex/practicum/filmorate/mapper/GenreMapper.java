@@ -1,7 +1,7 @@
 package ru.yandex.practicum.filmorate.mapper;
 
 import ru.yandex.practicum.filmorate.dto.genre.CreateGenreRequest;
-import ru.yandex.practicum.filmorate.dto.genre.GenreDTO;
+import ru.yandex.practicum.filmorate.dto.genre.GenreDto;
 import ru.yandex.practicum.filmorate.dto.genre.UpdateGenreRequest;
 import ru.yandex.practicum.filmorate.model.Genre;
 
@@ -16,8 +16,8 @@ public class GenreMapper {
         return genre;
     }
 
-    public static GenreDTO mapToGenreDto(Genre genre) {
-        GenreDTO dto = new GenreDTO();
+    public static GenreDto mapToGenreDto(Genre genre) {
+        GenreDto dto = new GenreDto();
         dto.setId(genre.getId());
         dto.setName(genre.getName());
         return dto;

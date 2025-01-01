@@ -28,7 +28,7 @@ public class Film {
     private LocalDate releaseDate;
     @Positive(groups = {Create.class, Update.class})
     private Integer duration;
-    private RatingMPA ratingMPA;
+    private RatingMpa ratingMpa;
     private final Set<Long> filmLikesByUserId = new HashSet<>();
     private final Set<Long> genres = new HashSet<>();
 

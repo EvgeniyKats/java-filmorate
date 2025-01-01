@@ -1,19 +1,19 @@
 package ru.yandex.practicum.filmorate.service.genre;
 
 import ru.yandex.practicum.filmorate.dto.genre.CreateGenreRequest;
-import ru.yandex.practicum.filmorate.dto.genre.GenreDTO;
+import ru.yandex.practicum.filmorate.dto.genre.GenreDto;
 import ru.yandex.practicum.filmorate.dto.genre.UpdateGenreRequest;
 
 import java.util.List;
 
 public interface GenreService {
-    List<GenreDTO> getAll();
+    List<GenreDto> getAll();
 
-    GenreDTO getGenreById(int id);
+    GenreDto getGenreById(int id);
 
-    GenreDTO createGenre(CreateGenreRequest request);
+    GenreDto createGenre(CreateGenreRequest request);
 
-    GenreDTO updateGenre(int id, UpdateGenreRequest request);
+    GenreDto updateGenre(int id, UpdateGenreRequest request);
 
-    GenreDTO deleteGenre(int id);
+    GenreDto deleteGenre(int id);
 }
