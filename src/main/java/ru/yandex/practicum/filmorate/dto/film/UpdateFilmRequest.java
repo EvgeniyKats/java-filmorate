@@ -4,9 +4,11 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
+import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.RatingMpa;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Data
 public class UpdateFilmRequest {
@@ -18,7 +20,8 @@ public class UpdateFilmRequest {
     private LocalDate releaseDate;
     @Positive
     private Integer duration;
-    private RatingMpa ratingMpa;
+    private RatingMpa mpa;
+    private List<Genre> genres;
 
     public boolean hasName() {
         return name != null && !name.isBlank();
@@ -37,6 +40,10 @@ public class UpdateFilmRequest {
     }
 
     public boolean hasRatingMpa() {
-        return ratingMpa != null;
+        return mpa != null;
+    }
+
+    public boolean hasGenres() {
+        return genres != null;
     }
 }

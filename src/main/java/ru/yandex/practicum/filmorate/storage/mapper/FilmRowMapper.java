@@ -3,17 +3,18 @@ package ru.yandex.practicum.filmorate.storage.mapper;
 import lombok.AllArgsConstructor;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
+import ru.yandex.practicum.filmorate.exception.custom.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.RatingMpa;
 import ru.yandex.practicum.filmorate.storage.genre.FilmGenresStorage;
+import ru.yandex.practicum.filmorate.storage.genre.GenreStorage;
 import ru.yandex.practicum.filmorate.storage.like.FilmLikesStorage;
 import ru.yandex.practicum.filmorate.storage.ratingmpa.RatingMpaStorage;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
-import java.time.ZoneId;
-import java.util.Date;
 
 @Component
 @AllArgsConstructor
@@ -21,16 +22,17 @@ public class FilmRowMapper implements RowMapper<Film> {
     private final RatingMpaStorage ratingMPAStorage;
     private final FilmGenresStorage filmGenresStorage;
     private final FilmLikesStorage filmLikesStorage;
+    private final GenreStorage genreStorage;
 
     @Override
     public Film mapRow(ResultSet rs, int rowNum) throws SQLException {
         long id = rs.getLong("film_id");
         String name = rs.getString("name");
         String description = rs.getString("description");
-        LocalDate release = convertDateToLocalDate(rs.getDate("release"));
+        LocalDate release = rs.getDate("release").toLocalDate();
         int duration = rs.getInt("duration");
-        int ratingMpa = rs.getInt("rating_id");
-        RatingMpa ratingMPA = ratingMPAStorage.getRatingMPAById(ratingMpa).orElse(null);
+        int ratingMpaId = rs.getInt("rating_mpa_id");
+        RatingMpa ratingMpa = ratingMPAStorage.getRatingMPAById(ratingMpaId).orElse(null);
 
         Film result = Film.builder()
                 .id(id)
@@ -38,7 +40,7 @@ public class FilmRowMapper implements RowMapper<Film> {
                 .description(description)
                 .releaseDate(release)
                 .duration(duration)
-                .ratingMpa(ratingMPA)
+                .mpa(ratingMpa)
                 .build();
         fillFilmGenres(result);
         fillFilmLikes(result);
@@ -46,12 +48,12 @@ public class FilmRowMapper implements RowMapper<Film> {
         return result;
     }
 
-    private LocalDate convertDateToLocalDate(Date date) {
-        return LocalDate.ofInstant(date.toInstant(), ZoneId.systemDefault());
-    }
-
     private void fillFilmGenres(Film film) {
-        filmGenresStorage.getGenresByFilmId(film.getId()).forEach(pair -> film.addGenre(pair.getGenreId()));
+        filmGenresStorage.getGenresByFilmId(film.getId()).forEach(pair -> {
+            Genre genre = genreStorage.getGenre(pair.getGenreId()).orElseThrow(() ->
+                    new NotFoundException("Жанр с ID = " + pair.getFilmId() + " не найден."));
+            film.addGenre(genre);
+        });
     }
 
     private void fillFilmLikes(Film film) {

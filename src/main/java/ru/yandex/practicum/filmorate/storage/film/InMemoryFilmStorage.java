@@ -8,9 +8,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Slf4j
-@Component
+@Component("inMemoryFilmStorage")
 public class InMemoryFilmStorage implements FilmStorage {
     private final Map<Long, Film> filmsData;
 
@@ -19,8 +20,8 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public Film getFilm(long id) {
-        return filmsData.get(id);
+    public Optional<Film> getFilm(long id) {
+        return Optional.ofNullable(filmsData.get(id));
     }
 
     @Override
@@ -37,12 +38,13 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public void addFilm(Film film) {
+    public Film addFilm(Film film) {
         long id = getNextId();
         log.debug("Был получен id для film: {}", id);
         film.setId(id);
         filmsData.put(film.getId(), film);
         log.trace("Фильм {} добавлен в хранилище.", id);
+        return film;
     }
 
     @Override
@@ -60,11 +62,6 @@ public class InMemoryFilmStorage implements FilmStorage {
     public void removeFilm(long id) {
         filmsData.remove(id);
         log.trace("Фильм {} удалён из хранилища.", id);
-    }
-
-    @Override
-    public boolean isFilmInStorageById(long id) {
-        return filmsData.containsKey(id);
     }
 
     private long getNextId() {

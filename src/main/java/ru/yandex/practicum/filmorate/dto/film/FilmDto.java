@@ -1,9 +1,9 @@
 package ru.yandex.practicum.filmorate.dto.film;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.validation.constraints.Size;
 import lombok.Builder;
 import lombok.Data;
+import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.RatingMpa;
 
 import java.time.LocalDate;
@@ -19,9 +19,9 @@ public class FilmDto {
     private String description;
     private LocalDate releaseDate;
     private Integer duration;
-    private RatingMpa ratingMpa;
+    private RatingMpa mpa;
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private final Set<Long> filmLikesByUserId = new HashSet<>();
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    private final Set<Long> genres = new HashSet<>();
+    private Set<Genre> genres;
 }

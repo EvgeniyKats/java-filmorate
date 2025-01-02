@@ -9,8 +9,6 @@ import ru.yandex.practicum.filmorate.storage.friend.FriendStorage;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
-import java.time.ZoneId;
-import java.util.Date;
 
 @Component
 @AllArgsConstructor
@@ -23,7 +21,7 @@ public class UserRowMapper implements RowMapper<User> {
         String email = rs.getString("email_address");
         String login = rs.getString("login");
         String name = rs.getString("name");
-        LocalDate birthday = convertDateToLocalDate(rs.getDate("birthday"));
+        LocalDate birthday = rs.getDate("birthday").toLocalDate();
 
         User result = User.builder()
                 .id(id)
@@ -35,10 +33,6 @@ public class UserRowMapper implements RowMapper<User> {
         fillUserFriends(result);
 
         return result;
-    }
-
-    private LocalDate convertDateToLocalDate(Date date) {
-        return LocalDate.ofInstant(date.toInstant(), ZoneId.systemDefault());
     }
 
     private void fillUserFriends(User user) {

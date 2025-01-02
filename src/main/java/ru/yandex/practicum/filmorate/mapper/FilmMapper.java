@@ -11,13 +11,15 @@ public class FilmMapper {
     }
 
     public static Film mapToFilm(CreateFilmRequest request) {
-        return Film.builder()
+        Film result = Film.builder()
                 .name(request.getName())
                 .description(request.getDescription())
                 .releaseDate(request.getReleaseDate())
                 .duration(request.getDuration())
-                .ratingMpa(request.getRatingMpa())
+                .mpa(request.getMpa())
                 .build();
+        if (request.getGenres() != null) request.getGenres().forEach(result::addGenre);
+        return result;
     }
 
     public static FilmDto mapToFilmDto(Film film) {
@@ -27,7 +29,8 @@ public class FilmMapper {
                 .description(film.getDescription())
                 .releaseDate(film.getReleaseDate())
                 .duration(film.getDuration())
-                .ratingMpa(film.getRatingMpa())
+                .mpa(film.getMpa())
+                .genres(film.getGenres())
                 .build();
     }
 
@@ -37,7 +40,8 @@ public class FilmMapper {
         if (request.hasDescription()) film.setDescription(request.getDescription());
         if (request.hasReleaseDate()) film.setReleaseDate(request.getReleaseDate());
         if (request.hasDuration()) film.setDuration(request.getDuration());
-        if (request.hasRatingMpa()) film.setRatingMpa(request.getRatingMpa());
+        if (request.hasRatingMpa()) film.setMpa(request.getMpa());
+        if (request.hasGenres()) request.getGenres().forEach(film::addGenre);
         return film;
     }
 }

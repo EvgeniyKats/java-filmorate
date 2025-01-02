@@ -5,9 +5,11 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
+import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.RatingMpa;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Data
 public class CreateFilmRequest {
@@ -19,5 +21,6 @@ public class CreateFilmRequest {
     @Positive
     private Integer duration;
     @NotNull
-    private RatingMpa ratingMpa;
+    private RatingMpa mpa;
+    private List<Genre> genres;
 }

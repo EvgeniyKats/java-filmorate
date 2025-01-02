@@ -3,7 +3,6 @@ package ru.yandex.practicum.filmorate.storage.ratingmpa;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.exception.custom.NotFoundException;
 import ru.yandex.practicum.filmorate.model.RatingMpa;
 import ru.yandex.practicum.filmorate.storage.BaseRepository;
 

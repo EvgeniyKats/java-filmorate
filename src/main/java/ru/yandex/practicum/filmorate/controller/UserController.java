@@ -13,10 +13,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.dto.user.CreateUserRequest;
+import ru.yandex.practicum.filmorate.dto.user.UpdateUserRequest;
+import ru.yandex.practicum.filmorate.dto.user.UserDto;
 import ru.yandex.practicum.filmorate.service.user.UserService;
-import ru.yandex.practicum.filmorate.validate.Create;
-import ru.yandex.practicum.filmorate.validate.Update;
 
 import java.util.List;
 
@@ -28,25 +28,25 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping
-    public List<User> findAll() {
+    public List<UserDto> findAll() {
         log.info("Получен GET запрос /users");
         return userService.findAll();
     }
 
     @GetMapping("/{id}")
-    public User getUserById(@PathVariable Long id) {
+    public UserDto getUserById(@PathVariable Long id) {
         log.info("Получен GET запрос /users/{}", id);
         return userService.getUserById(id);
     }
 
     @GetMapping("/{id}/friends")
-    public List<User> getFriends(@PathVariable Long id) {
+    public List<UserDto> getFriends(@PathVariable Long id) {
         log.info("Получен GET запрос /users/{}/friends", id);
         return userService.getFriends(id);
     }
 
     @GetMapping("/{id}/friends/common/{otherId}")
-    public List<User> getCommonFriends(@PathVariable Long id,
+    public List<UserDto> getCommonFriends(@PathVariable Long id,
                                        @PathVariable Long otherId) {
         log.info("Получен GET запрос /users/{}/friends/common/{}", id, otherId);
         return userService.getCommonFriends(id, otherId);
@@ -54,15 +54,15 @@ public class UserController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public User createUser(@Validated(Create.class) @RequestBody User user) {
+    public UserDto createUser(@Validated @RequestBody CreateUserRequest request) {
         log.info("Получен POST запрос /users");
-        return userService.createUser(user);
+        return userService.createUser(request);
     }
 
     @PutMapping
-    public User updateUser(@Validated(Update.class) @RequestBody User user) {
+    public UserDto updateUser(@Validated @RequestBody UpdateUserRequest request) {
         log.info("Получен PUT запрос /users");
-        return userService.updateUser(user);
+        return userService.updateUser(request);
     }
 
     @PutMapping("/{id}/friends/{friendId}")

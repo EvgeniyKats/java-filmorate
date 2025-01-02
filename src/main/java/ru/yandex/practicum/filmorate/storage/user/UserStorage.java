@@ -3,19 +3,20 @@ package ru.yandex.practicum.filmorate.storage.user;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface UserStorage {
-    User getUser(long id);
+    Optional<User> getUserById(long id);
+
+    boolean isEmailAlreadyInData(String email);
 
     List<User> getAllUsers();
 
-    void addUser(User user);
+    User addUser(User user);
 
     User updateUser(User user);
 
     void removeUser(long id);
 
-    boolean isUserInStorageByUser(User user);
-
-    boolean isUserNotExistInStorageById(long id);
+    List<User> getCommonFriends(User user, User friend);
 }

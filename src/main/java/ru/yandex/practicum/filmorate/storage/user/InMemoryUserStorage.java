@@ -9,10 +9,11 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 @Slf4j
-@Component
+@Component("inMemoryUserStorage")
 public class InMemoryUserStorage implements UserStorage {
     private final Map<Long, User> usersData;
     private final Set<User> usersSearch;
@@ -23,8 +24,14 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public User getUser(long id) {
-        return usersData.get(id);
+    public Optional<User> getUserById(long id) {
+        return Optional.ofNullable(usersData.get(id));
+    }
+
+
+    @Override
+    public boolean isEmailAlreadyInData(String email) {
+        return usersSearch.contains(User.builder().email(email).build());
     }
 
     @Override
@@ -33,13 +40,14 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public void addUser(User user) {
+    public User addUser(User user) {
         long id = getNextId();
         log.debug("Был получен id для user: {}", id);
         user.setId(id);
         usersData.put(user.getId(), user);
         usersSearch.add(user);
         log.trace("Пользователь {} добавлен в хранилище.", id);
+        return user;
     }
 
     @Override
@@ -61,13 +69,13 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public boolean isUserInStorageByUser(User user) {
-        return usersSearch.contains(user);
-    }
-
-    @Override
-    public boolean isUserNotExistInStorageById(long id) {
-        return !usersData.containsKey(id);
+    public List<User> getCommonFriends(User user, User friend) {
+        Set<Long> friendsIdOfFriend = new HashSet<>(friend.getFriendsId());
+        return user.getFriendsId().stream()
+                .filter(friendsIdOfFriend::contains)
+                .map(this::getUserById)
+                .map(u -> u.orElse(null))
+                .toList();
     }
 
     private long getNextId() {
