@@ -9,7 +9,7 @@ import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.RatingMpa;
 import ru.yandex.practicum.filmorate.storage.genre.FilmGenresStorage;
 import ru.yandex.practicum.filmorate.storage.genre.GenreStorage;
-import ru.yandex.practicum.filmorate.storage.like.FilmLikesStorage;
+import ru.yandex.practicum.filmorate.storage.like.FilmLikeStorage;
 import ru.yandex.practicum.filmorate.storage.ratingmpa.RatingMpaStorage;
 
 import java.sql.ResultSet;
@@ -21,7 +21,7 @@ import java.time.LocalDate;
 public class FilmRowMapper implements RowMapper<Film> {
     private final RatingMpaStorage ratingMPAStorage;
     private final FilmGenresStorage filmGenresStorage;
-    private final FilmLikesStorage filmLikesStorage;
+    private final FilmLikeStorage filmLikeStorage;
     private final GenreStorage genreStorage;
 
     @Override
@@ -57,7 +57,7 @@ public class FilmRowMapper implements RowMapper<Film> {
     }
 
     private void fillFilmLikes(Film film) {
-        filmLikesStorage.getFilmLikesByFilmId(film.getId())
+        filmLikeStorage.getFilmLikesByFilmId(film.getId())
                 .forEach(filmLikePair -> film.addLike(filmLikePair.getUserId()));
     }
 }

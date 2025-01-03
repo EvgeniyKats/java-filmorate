@@ -5,7 +5,7 @@ import ru.yandex.practicum.filmorate.model.FilmLikePair;
 import java.util.List;
 import java.util.Optional;
 
-public interface FilmLikesStorage {
+public interface FilmLikeStorage {
     Optional<FilmLikePair> getPairById(long id);
 
     List<FilmLikePair> getFilmLikesByFilmId(long filmId);

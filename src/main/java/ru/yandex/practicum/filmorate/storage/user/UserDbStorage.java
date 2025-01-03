@@ -2,14 +2,14 @@ package ru.yandex.practicum.filmorate.storage.user;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.BaseRepository;
 
 import java.util.List;
 import java.util.Optional;
 
-@Component("userDbStorage")
+@Repository("userDbStorage")
 public class UserDbStorage extends BaseRepository<User> implements UserStorage {
     private static final String FIND_ALL_QUERY = "SELECT * FROM users;";
     private static final String FIND_BY_ID_QUERY = "SELECT * FROM users WHERE user_id = ?;";

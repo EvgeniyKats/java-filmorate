@@ -8,7 +8,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 @Component
-public class FriendsRowMapper implements RowMapper<UserFriendPair> {
+public class FriendRowMapper implements RowMapper<UserFriendPair> {
     @Override
     public UserFriendPair mapRow(ResultSet rs, int numberRow) throws SQLException {
         UserFriendPair result = new UserFriendPair();

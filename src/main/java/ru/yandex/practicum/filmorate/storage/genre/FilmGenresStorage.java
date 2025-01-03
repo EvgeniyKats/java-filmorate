@@ -10,7 +10,7 @@ public interface FilmGenresStorage {
 
     List<FilmGenrePair> getGenresByFilmId(long filmId);
 
-    void addFilmGenre(long filmId, int genreId);
+    void addGenreToFilm(long filmId, int genreId);
 
-    void removeFilmGenre(long filmId, int genreId);
+    void removeGenreOfFilm(long filmId, int genreId);
 }

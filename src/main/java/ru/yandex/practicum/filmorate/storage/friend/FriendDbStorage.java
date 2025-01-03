@@ -2,14 +2,14 @@ package ru.yandex.practicum.filmorate.storage.friend;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.model.UserFriendPair;
 import ru.yandex.practicum.filmorate.storage.BaseRepository;
 
 import java.util.List;
 import java.util.Optional;
 
-@Component
+@Repository
 public class FriendDbStorage extends BaseRepository<UserFriendPair> implements FriendStorage {
     private static final String FIND_BY_ID_QUERY = "SELECT * FROM user_friend WHERE id = ?;";
     private static final String FIND_USER_FRIENDS_QUERY = "SELECT * FROM user_friend WHERE user_id = ?;";

@@ -2,14 +2,14 @@ package ru.yandex.practicum.filmorate.storage.genre;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.model.FilmGenrePair;
 import ru.yandex.practicum.filmorate.storage.BaseRepository;
 
 import java.util.List;
 import java.util.Optional;
 
-@Component
+@Repository
 public class FilmGenresDbStorage extends BaseRepository<FilmGenrePair> implements FilmGenresStorage {
     private static final String FIND_BY_ID_QUERY = "SELECT * FROM film_genre WHERE id = ?;";
     private static final String FIND_BY_FILM_ID_QUERY = "SELECT * FROM film_genre WHERE film_id = ?;";
@@ -31,12 +31,12 @@ public class FilmGenresDbStorage extends BaseRepository<FilmGenrePair> implement
     }
 
     @Override
-    public void addFilmGenre(long filmId, int genreId) {
+    public void addGenreToFilm(long filmId, int genreId) {
         insert(INSERT_QUERY, Long.class, filmId, genreId);
     }
 
     @Override
-    public void removeFilmGenre(long filmId, int genreId) {
+    public void removeGenreOfFilm(long filmId, int genreId) {
         delete(DELETE_QUERY, filmId, genreId);
     }
 }

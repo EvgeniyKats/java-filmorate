@@ -2,15 +2,15 @@ package ru.yandex.practicum.filmorate.storage.like;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.model.FilmLikePair;
 import ru.yandex.practicum.filmorate.storage.BaseRepository;
 
 import java.util.List;
 import java.util.Optional;
 
-@Component
-public class FilmLikeDbStorage extends BaseRepository<FilmLikePair> implements FilmLikesStorage {
+@Repository
+public class FilmLikeDbStorage extends BaseRepository<FilmLikePair> implements FilmLikeStorage {
     private static final String FIND_BY_ID_QUERY = "SELECT * FROM film_like WHERE id = ?;";
     private static final String FIND_BY_FILM_ID_QUERY = "SELECT * FROM film_like WHERE film_id = ?;";
     private static final String FIND_BY_USER_ID_QUERY = "SELECT * FROM film_like WHERE user_id = ?;";

@@ -17,7 +17,7 @@ import ru.yandex.practicum.filmorate.model.RatingMpa;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.genre.FilmGenresStorage;
 import ru.yandex.practicum.filmorate.storage.genre.GenreStorage;
-import ru.yandex.practicum.filmorate.storage.like.FilmLikesStorage;
+import ru.yandex.practicum.filmorate.storage.like.FilmLikeStorage;
 import ru.yandex.practicum.filmorate.storage.ratingmpa.RatingMpaStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
@@ -32,17 +32,17 @@ public class FilmServiceImplement implements FilmService {
 
     private final FilmStorage filmStorage;
     private final UserStorage userStorage;
-    private final FilmLikesStorage filmLikesStorage;
+    private final FilmLikeStorage filmLikeStorage;
     private final FilmGenresStorage filmGenresStorage;
     private final GenreStorage genreStorage;
     private final RatingMpaStorage ratingMpaStorage;
 
     public FilmServiceImplement(@Qualifier("filmDbStorage") FilmStorage filmStorage,
                                 @Qualifier("userDbStorage") UserStorage userStorage,
-                                FilmLikesStorage filmLikesStorage, FilmGenresStorage filmGenresStorage, GenreStorage genreStorage, RatingMpaStorage ratingMpaStorage) {
+                                FilmLikeStorage filmLikeStorage, FilmGenresStorage filmGenresStorage, GenreStorage genreStorage, RatingMpaStorage ratingMpaStorage) {
         this.filmStorage = filmStorage;
         this.userStorage = userStorage;
-        this.filmLikesStorage = filmLikesStorage;
+        this.filmLikeStorage = filmLikeStorage;
         this.filmGenresStorage = filmGenresStorage;
         this.genreStorage = genreStorage;
         this.ratingMpaStorage = ratingMpaStorage;
@@ -64,7 +64,7 @@ public class FilmServiceImplement implements FilmService {
         validateMpa(request.getMpa());
         Film film = FilmMapper.mapToFilm(request);
         filmStorage.addFilm(film);
-        film.getGenres().forEach(genre -> filmGenresStorage.addFilmGenre(film.getId(), genre.getId()));
+        film.getGenres().forEach(genre -> filmGenresStorage.addGenreToFilm(film.getId(), genre.getId()));
         log.info("Film {}, был добавлен в хранилище.", film);
         return FilmMapper.mapToFilmDto(film);
     }
@@ -78,8 +78,8 @@ public class FilmServiceImplement implements FilmService {
         if (request.hasGenres()) {
             validateGenres(request.getGenres());
             List<FilmGenrePair> pairs = filmGenresStorage.getGenresByFilmId(film.getId());
-            pairs.forEach(p -> filmGenresStorage.removeFilmGenre(p.getFilmId(), p.getGenreId()));
-            film.getGenres().forEach(genre -> filmGenresStorage.addFilmGenre(request.getId(), genre.getId()));
+            pairs.forEach(p -> filmGenresStorage.removeGenreOfFilm(p.getFilmId(), p.getGenreId()));
+            film.getGenres().forEach(genre -> filmGenresStorage.addGenreToFilm(request.getId(), genre.getId()));
         }
         film = filmStorage.updateFilm(film);
         return FilmMapper.mapToFilmDto(film);
@@ -106,7 +106,7 @@ public class FilmServiceImplement implements FilmService {
         userStorage.getUserById(userId).orElseThrow(
                 () -> new NotFoundException("Пользователь с id=" + userId + " отсутствует в хранилище."));
         film.addLike(userId);
-        filmLikesStorage.addLike(filmId, userId);
+        filmLikeStorage.addLike(filmId, userId);
         log.info("Лайк был успешно поставлен Film: {}, User: {}", filmId, userId);
         return film.getFilmLikesByUserId();
     }
@@ -117,7 +117,7 @@ public class FilmServiceImplement implements FilmService {
         userStorage.getUserById(userId).orElseThrow(
                 () -> new NotFoundException("Пользователь с id=" + userId + " отсутствует в хранилище."));
         film.removeLike(userId);
-        filmLikesStorage.removeLike(filmId, userId);
+        filmLikeStorage.removeLike(filmId, userId);
         log.info("Лайк был успешно удалён Film: {}, User: {}", filmId, userId);
         return film.getFilmLikesByUserId();
     }
