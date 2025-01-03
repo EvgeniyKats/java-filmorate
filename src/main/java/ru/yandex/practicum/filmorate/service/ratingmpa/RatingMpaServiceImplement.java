@@ -19,7 +19,7 @@ public class RatingMpaServiceImplement implements RatingMpaService {
 
     @Override
     public RatingMpaDto getMpaById(long idMpa) {
-        RatingMpa ratingMpa =  ratingMpaStorage.getRatingMPAById(idMpa)
+        RatingMpa ratingMpa = ratingMpaStorage.getRatingMPAById(idMpa)
                 .orElseThrow(() -> new NotFoundException("Rating mpa не найден с ID = " + idMpa));
         log.info("getMpaById success");
         return RatingMpaMapper.mapToRatingMpaDto(ratingMpa);

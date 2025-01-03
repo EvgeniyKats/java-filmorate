@@ -42,7 +42,7 @@ public class UserServiceImplement implements UserService {
         log.trace("CreateUserRequest = {}", request);
         throwDuplicateIfEmailAlreadyInStorage(request.getEmail());
         User user = UserMapper.mapToUser(request);
-        log.trace("mapToUser = {}" , user);
+        log.trace("mapToUser = {}", user);
         if (user.getName() == null || user.getName().isBlank()) {
             user.setName(user.getLogin());
             log.trace("Пользователь не указал имя. Для отображения используется логин.");
@@ -54,13 +54,13 @@ public class UserServiceImplement implements UserService {
 
     @Override
     public UserDto updateUser(UpdateUserRequest request) {
-        log.trace("UpdateUserRequest = {}" , request);
+        log.trace("UpdateUserRequest = {}", request);
         User user = throwNotFoundIfIdAbsentInStorage(request.getId());
         if (request.getEmail() != null && !request.getEmail().equals(user.getEmail())) {
             throwDuplicateIfEmailAlreadyInStorage(request.getEmail());
         }
         UserMapper.updateUserFields(user, request);
-        log.trace("updateUserFields = {}" , user);
+        log.trace("updateUserFields = {}", user);
         user = userStorage.updateUser(user);
         log.info("updateUser success");
         return UserMapper.mapToUserDto(user);
