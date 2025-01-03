@@ -54,6 +54,7 @@ public class FilmServiceImplement implements FilmService {
                 .map(FilmMapper::mapToFilmDto)
                 .toList();
         log.debug("Текущий список фильмов: {}.", result);
+        log.info("findAll success");
         return result;
     }
 
@@ -62,7 +63,9 @@ public class FilmServiceImplement implements FilmService {
         validateRelease(request.getReleaseDate());
         validateGenres(request.getGenres());
         validateMpa(request.getMpa());
+        log.trace("Успешная валидация, createFilm");
         Film film = FilmMapper.mapToFilm(request);
+        log.debug("Преобразование в фильм, createFilm, {}", film);
         filmStorage.addFilm(film);
         film.getGenres().forEach(genre -> filmGenresStorage.addGenreToFilm(film.getId(), genre.getId()));
         log.info("Film {}, был добавлен в хранилище.", film);
@@ -74,14 +77,17 @@ public class FilmServiceImplement implements FilmService {
         Film film = throwNotFoundIfIdAbsentInStorage(request.getId());
         validateRelease(request.getReleaseDate());
         validateMpa(request.getMpa());
+        if (request.hasGenres()) validateGenres(request.getGenres());
+        log.trace("Успешная валидация, updateFilm");
         FilmMapper.updateFilmFields(film, request);
+        log.trace("Обновленный фильм: {}", film);
         if (request.hasGenres()) {
-            validateGenres(request.getGenres());
             List<FilmGenrePair> pairs = filmGenresStorage.getGenresByFilmId(film.getId());
             pairs.forEach(p -> filmGenresStorage.removeGenreOfFilm(p.getFilmId(), p.getGenreId()));
             film.getGenres().forEach(genre -> filmGenresStorage.addGenreToFilm(request.getId(), genre.getId()));
         }
         film = filmStorage.updateFilm(film);
+        log.info("updateFilm success");
         return FilmMapper.mapToFilmDto(film);
     }
 
@@ -89,6 +95,7 @@ public class FilmServiceImplement implements FilmService {
     public FilmDto getFilmById(long id) {
         Film film = throwNotFoundIfIdAbsentInStorage(id);
         log.trace("Фильм прошел проверку на null.");
+        log.info("getFilmById success");
         return FilmMapper.mapToFilmDto(film);
     }
 
@@ -105,6 +112,7 @@ public class FilmServiceImplement implements FilmService {
         Film film = throwNotFoundIfIdAbsentInStorage(filmId);
         userStorage.getUserById(userId).orElseThrow(
                 () -> new NotFoundException("Пользователь с id=" + userId + " отсутствует в хранилище."));
+        log.trace("addFilmLike, пройдены проверки");
         film.addLike(userId);
         filmLikeStorage.addLike(filmId, userId);
         log.info("Лайк был успешно поставлен Film: {}, User: {}", filmId, userId);
@@ -116,6 +124,7 @@ public class FilmServiceImplement implements FilmService {
         Film film = throwNotFoundIfIdAbsentInStorage(filmId);
         userStorage.getUserById(userId).orElseThrow(
                 () -> new NotFoundException("Пользователь с id=" + userId + " отсутствует в хранилище."));
+        log.trace("removeFilmLike, пройдены проверки");
         film.removeLike(userId);
         filmLikeStorage.removeLike(filmId, userId);
         log.info("Лайк был успешно удалён Film: {}, User: {}", filmId, userId);

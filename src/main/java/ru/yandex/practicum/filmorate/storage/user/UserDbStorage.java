@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.storage.user;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
@@ -9,6 +10,7 @@ import ru.yandex.practicum.filmorate.storage.BaseRepository;
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @Repository("userDbStorage")
 public class UserDbStorage extends BaseRepository<User> implements UserStorage {
     private static final String FIND_ALL_QUERY = "SELECT * FROM users;";
@@ -20,17 +22,17 @@ public class UserDbStorage extends BaseRepository<User> implements UserStorage {
             "WHERE user_id = ?;";
     private static final String DELETE_QUERY = "DELETE users WHERE user_id = ?;";
     private static final String FIND_COMMON_FRIENDS_QUERY = """
-            SELECT *
-            FROM users
-            WHERE user_id IN
-                (SELECT friend_id
-                 FROM user_friend
-                 WHERE user_id = ?
-                   AND friend_id IN
-                     (SELECT friend_id
-                      FROM user_friend
-                      WHERE user_id = ?));
-    """;
+                    SELECT *
+                    FROM users
+                    WHERE user_id IN
+                        (SELECT friend_id
+                         FROM user_friend
+                         WHERE user_id = ?
+                           AND friend_id IN
+                             (SELECT friend_id
+                              FROM user_friend
+                              WHERE user_id = ?));
+            """;
 
     public UserDbStorage(JdbcTemplate jdbc, RowMapper<User> mapper) {
         super(jdbc, mapper);
@@ -38,17 +40,24 @@ public class UserDbStorage extends BaseRepository<User> implements UserStorage {
 
     @Override
     public Optional<User> getUserById(long id) {
-        return findOne(FIND_BY_ID_QUERY, id);
+        Optional<User> result = findOne(FIND_BY_ID_QUERY, id);
+        log.debug("getUserById, result = {}", result);
+        return result;
     }
 
     @Override
     public boolean isEmailAlreadyInData(String email) {
-        return findOne(FIND_BY_EMAIL_QUERY, email).isPresent();
+        log.debug("isEmailAlreadyInData, email = {}", email);
+        boolean result = findOne(FIND_BY_EMAIL_QUERY, email).isPresent();
+        log.debug("isEmailAlreadyInData, email isPresent = {}", result);
+        return result;
     }
 
     @Override
     public List<User> getAllUsers() {
-        return findMany(FIND_ALL_QUERY);
+        List<User> result = findMany(FIND_ALL_QUERY);
+        log.debug("getAllUsers, result = {}", result);
+        return result;
     }
 
     @Override
@@ -59,6 +68,7 @@ public class UserDbStorage extends BaseRepository<User> implements UserStorage {
                 user.getName(),
                 user.getBirthday());
         user.setId(id);
+        log.debug("addUser, user = {}", user);
         return user;
     }
 
@@ -70,16 +80,20 @@ public class UserDbStorage extends BaseRepository<User> implements UserStorage {
                 user.getName(),
                 user.getBirthday(),
                 user.getId());
+        log.debug("updateUser, user = {}", user);
         return user;
     }
 
     @Override
     public void removeUser(long id) {
+        log.debug("removeUser, id = {}", id);
         delete(DELETE_QUERY, id);
     }
 
     @Override
     public List<User> getCommonFriends(User user, User friend) {
-        return findMany(FIND_COMMON_FRIENDS_QUERY, user.getId(), friend.getId());
+        List<User> result = findMany(FIND_COMMON_FRIENDS_QUERY, user.getId(), friend.getId());
+        log.debug("getCommonFriends, result = {}", result);
+        return result;
     }
 }

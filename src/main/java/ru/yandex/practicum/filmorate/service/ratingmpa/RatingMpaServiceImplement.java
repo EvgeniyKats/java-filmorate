@@ -21,13 +21,16 @@ public class RatingMpaServiceImplement implements RatingMpaService {
     public RatingMpaDto getMpaById(long idMpa) {
         RatingMpa ratingMpa =  ratingMpaStorage.getRatingMPAById(idMpa)
                 .orElseThrow(() -> new NotFoundException("Rating mpa не найден с ID = " + idMpa));
+        log.info("getMpaById success");
         return RatingMpaMapper.mapToRatingMpaDto(ratingMpa);
     }
 
     @Override
     public List<RatingMpaDto> getAllMpa() {
-        return ratingMpaStorage.getAll().stream()
+        List<RatingMpaDto> result = ratingMpaStorage.getAll().stream()
                 .map(RatingMpaMapper::mapToRatingMpaDto)
                 .toList();
+        log.info("getAllMpa success");
+        return result;
     }
 }

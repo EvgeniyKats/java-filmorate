@@ -41,12 +41,16 @@ public class FilmDbStorage extends BaseRepository<Film> implements FilmStorage {
 
     @Override
     public Optional<Film> getFilm(long id) {
-        return findOne(FIND_BY_ID_QUERY, id);
+        Optional<Film> result = findOne(FIND_BY_ID_QUERY, id);
+        log.debug("getFilm result = {}", result);
+        return result;
     }
 
     @Override
     public List<Film> getAllFilms() {
-        return findMany(FIND_ALL_QUERY);
+        List<Film> result = findMany(FIND_ALL_QUERY);
+        log.debug("getAllFilms result = {}", result);
+        return result;
     }
 
     @Override
@@ -59,6 +63,7 @@ public class FilmDbStorage extends BaseRepository<Film> implements FilmStorage {
                 film.getMpa().getId()
         );
         film.setId(id);
+        log.debug("addFilm film = {}", film);
         return film;
     }
 
@@ -72,16 +77,19 @@ public class FilmDbStorage extends BaseRepository<Film> implements FilmStorage {
                 film.getMpa().getId(),
                 film.getId()
         );
+        log.debug("updateFilm film = {}", film);
         return film;
     }
 
     @Override
     public void removeFilm(long id) {
+        log.debug("removeFilm id = {}", id);
         delete(DELETE_QUERY, id);
     }
 
     @Override
     public List<Film> getTopFilms(int count) {
+        log.debug("getTopFilms count = {}", count);
         return findMany(GET_TOP_QUERY, count);
     }
 }

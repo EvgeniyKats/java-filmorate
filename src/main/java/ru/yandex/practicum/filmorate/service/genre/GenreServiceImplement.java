@@ -30,22 +30,29 @@ public class GenreServiceImplement implements GenreService {
     @Override
     public GenreDto getGenreById(int id) {
         Genre genre = genreStorage.getGenre(id).orElseThrow(() -> new NotFoundException("Жанр не найден с ID: " + id));
+        log.info("getGenreById success");
         return GenreMapper.mapToGenreDto(genre);
     }
 
     @Override
     public GenreDto createGenre(CreateGenreRequest request) {
+        log.trace("CreateGenreRequest = {}", request);
         Genre genre = GenreMapper.mapToGenre(request);
+        log.trace("mapToGenre, {}", genre);
         genre = genreStorage.addGenre(genre);
+        log.info("createGenre success");
         return GenreMapper.mapToGenreDto(genre);
     }
 
     @Override
     public GenreDto updateGenre(int id, UpdateGenreRequest request) {
+        log.trace("UpdateGenreRequest = {}", request);
         Genre genre = genreStorage.getGenre(id)
                 .orElseThrow(() -> new NotFoundException("Жанр не найден с ID: " + id));
         GenreMapper.updateGenreFields(genre, request);
+        log.trace("updateGenreFields, {}", genre);
         genreStorage.updateGenre(genre);
+        log.info("updateGenre success");
         return GenreMapper.mapToGenreDto(genre);
     }
 
@@ -54,6 +61,7 @@ public class GenreServiceImplement implements GenreService {
         Genre genre = genreStorage.getGenre(id)
                 .orElseThrow(() -> new NotFoundException("Жанр не найден с ID: " + id));
         genreStorage.removeGenre(id);
+        log.info("deleteGenre success");
         return GenreMapper.mapToGenreDto(genre);
     }
 }
