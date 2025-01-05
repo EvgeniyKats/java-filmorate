@@ -3,7 +3,7 @@ logging.level:
 #  org.zalando.logbook: TRACE
 spring:
   config:
-    import: "dataSourceMem.yaml"
+    import: "dataSourceFile.yaml"
   h2:
     console.enabled: true
   sql:

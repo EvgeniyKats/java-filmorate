@@ -1,6 +1,5 @@
 package ru.yandex.practicum.filmorate.storage.film;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
@@ -10,7 +9,6 @@ import ru.yandex.practicum.filmorate.storage.BaseRepository;
 import java.util.List;
 import java.util.Optional;
 
-@Slf4j
 @Repository("filmDbStorage")
 public class FilmDbStorage extends BaseRepository<Film> implements FilmStorage {
     private static final String FIND_ALL_QUERY = "SELECT * FROM film;";
@@ -41,16 +39,12 @@ public class FilmDbStorage extends BaseRepository<Film> implements FilmStorage {
 
     @Override
     public Optional<Film> getFilm(long id) {
-        Optional<Film> result = findOne(FIND_BY_ID_QUERY, id);
-        log.debug("getFilm result = {}", result);
-        return result;
+        return findOne(FIND_BY_ID_QUERY, id);
     }
 
     @Override
     public List<Film> getAllFilms() {
-        List<Film> result = findMany(FIND_ALL_QUERY);
-        log.debug("getAllFilms result = {}", result);
-        return result;
+        return findMany(FIND_ALL_QUERY);
     }
 
     @Override
@@ -63,7 +57,6 @@ public class FilmDbStorage extends BaseRepository<Film> implements FilmStorage {
                 film.getMpa().getId()
         );
         film.setId(id);
-        log.debug("addFilm film = {}", film);
         return film;
     }
 
@@ -77,19 +70,16 @@ public class FilmDbStorage extends BaseRepository<Film> implements FilmStorage {
                 film.getMpa().getId(),
                 film.getId()
         );
-        log.debug("updateFilm film = {}", film);
         return film;
     }
 
     @Override
     public void removeFilm(long id) {
-        log.debug("removeFilm id = {}", id);
         delete(DELETE_QUERY, id);
     }
 
     @Override
     public List<Film> getTopFilms(int count) {
-        log.debug("getTopFilms count = {}", count);
         return findMany(GET_TOP_QUERY, count);
     }
 }

@@ -1,6 +1,5 @@
 package ru.yandex.practicum.filmorate.storage.genre;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
@@ -10,7 +9,6 @@ import ru.yandex.practicum.filmorate.storage.BaseRepository;
 import java.util.List;
 import java.util.Optional;
 
-@Slf4j
 @Repository
 public class GenreDbStorage extends BaseRepository<Genre> implements GenreStorage {
     private static final String FIND_ALL_QUERY = "SELECT * FROM genre;";
@@ -25,21 +23,16 @@ public class GenreDbStorage extends BaseRepository<Genre> implements GenreStorag
 
     @Override
     public Optional<Genre> getGenre(int id) {
-        Optional<Genre> result = findOne(FIND_BY_ID_QUERY, id);
-        log.debug("getGenre, result = {}", result);
-        return result;
+        return findOne(FIND_BY_ID_QUERY, id);
     }
 
     @Override
     public List<Genre> getAllGenres() {
-        List<Genre> result = findMany(FIND_ALL_QUERY);
-        log.debug("getAllGenres, result = {}", result);
-        return result;
+        return findMany(FIND_ALL_QUERY);
     }
 
     @Override
     public Genre addGenre(Genre genre) {
-        log.debug("addGenre, genre = {}", genre);
         int id = insert(INSERT_QUERY, Integer.class, genre.getName());
         genre.setId(id);
         return genre;
@@ -47,7 +40,6 @@ public class GenreDbStorage extends BaseRepository<Genre> implements GenreStorag
 
     @Override
     public Genre updateGenre(Genre genre) {
-        log.debug("updateGenre, genre = {}", genre);
         update(UPDATE_QUERY,
                 genre.getName(),
                 genre.getId());
@@ -56,7 +48,6 @@ public class GenreDbStorage extends BaseRepository<Genre> implements GenreStorag
 
     @Override
     public boolean removeGenre(int id) {
-        log.debug("removeGenre, id = {}", id);
         return delete(DELETE_QUERY, id);
     }
 }
