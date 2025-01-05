@@ -1,7 +1,6 @@
 package ru.yandex.practicum.filmorate.mapper;
 
 import ru.yandex.practicum.filmorate.dto.user.CreateUserDto;
-import ru.yandex.practicum.filmorate.dto.user.UpdateUserDto;
 import ru.yandex.practicum.filmorate.dto.user.UserDto;
 import ru.yandex.practicum.filmorate.model.User;
 
@@ -27,13 +26,5 @@ public class UserMapper {
         result.setName(user.getName());
         result.setBirthday(user.getBirthday());
         return result;
-    }
-
-    public static User updateUserFields(User user, UpdateUserDto request) {
-        if (request.hasEmail()) user.setEmail(request.getEmail());
-        if (request.hasLogin()) user.setLogin(request.getLogin());
-        if (request.hasName()) user.setName(request.getName());
-        if (request.hasBirthDay()) user.setBirthday(request.getBirthday());
-        return user;
     }
 }

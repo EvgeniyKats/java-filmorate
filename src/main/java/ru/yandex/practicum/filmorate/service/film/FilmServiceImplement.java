@@ -82,7 +82,7 @@ public class FilmServiceImplement implements FilmService {
         validateMpa(request.getMpaDto());
         validateGenres(request.getGenresDto());
         log.trace("Успешная валидация, updateFilm");
-        FilmMapper.updateFilmFields(film, request);
+        film.updateFieldsFromUpdateDto(request);
         log.trace("Обновленный фильм: {}", film);
         if (request.hasGenres()) {
             List<FilmGenrePair> pairs = filmGenresStorage.getGenresByFilmId(film.getId());

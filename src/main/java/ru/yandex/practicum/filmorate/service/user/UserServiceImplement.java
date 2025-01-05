@@ -60,7 +60,7 @@ public class UserServiceImplement implements UserService {
         if (request.getEmail() != null && !request.getEmail().equals(user.getEmail())) {
             throwDuplicateIfEmailAlreadyInStorage(request.getEmail());
         }
-        UserMapper.updateUserFields(user, request);
+        user.updateFieldsFromUpdateDto(request);
         log.trace("updateUserFields = {}", user);
         user = userStorage.updateUser(user);
         log.info("updateUser success");

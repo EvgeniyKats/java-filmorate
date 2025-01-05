@@ -49,7 +49,7 @@ public class GenreServiceImplement implements GenreService {
         log.trace("UpdateGenreRequest = {}", request);
         Genre genre = genreStorage.getGenre(id)
                 .orElseThrow(() -> new NotFoundException("Жанр не найден с ID: " + id));
-        GenreMapper.updateGenreFields(genre, request);
+        genre.updateFieldsFromUpdateDto(request);
         log.trace("updateGenreFields, {}", genre);
         genreStorage.updateGenre(genre);
         log.info("updateGenre success");

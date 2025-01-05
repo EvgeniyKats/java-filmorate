@@ -2,7 +2,6 @@ package ru.yandex.practicum.filmorate.mapper;
 
 import ru.yandex.practicum.filmorate.dto.film.CreateFilmDto;
 import ru.yandex.practicum.filmorate.dto.film.FilmDto;
-import ru.yandex.practicum.filmorate.dto.film.UpdateFilmDto;
 import ru.yandex.practicum.filmorate.dto.genre.GenreDto;
 import ru.yandex.practicum.filmorate.model.Film;
 
@@ -42,20 +41,5 @@ public class FilmMapper {
                 .mpaDto(RatingMpaMapper.mapToRatingMpaDto(film.getMpa()))
                 .genresDto(genresDto)
                 .build();
-    }
-
-    public static Film updateFilmFields(Film film, UpdateFilmDto request) {
-        film.setId(request.getId());
-        if (request.hasName()) film.setName(request.getName());
-        if (request.hasDescription()) film.setDescription(request.getDescription());
-        if (request.hasReleaseDate()) film.setReleaseDate(request.getReleaseDate());
-        if (request.hasDuration()) film.setDuration(request.getDuration());
-        if (request.hasRatingMpa()) film.setMpa(RatingMpaMapper.mapToRatingMpa(request.getMpaDto()));
-        if (request.hasGenres()) {
-            request.getGenresDto().stream()
-                    .map(GenreMapper::mapToGenre)
-                    .forEach(film::addGenre);
-        }
-        return film;
     }
 }
