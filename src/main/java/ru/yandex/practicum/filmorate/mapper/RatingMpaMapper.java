@@ -14,4 +14,11 @@ public class RatingMpaMapper {
         result.setName(ratingMpa.getName());
         return result;
     }
+
+    public static RatingMpa mapToRatingMpa(RatingMpaDto dto) {
+        RatingMpa result = new RatingMpa();
+        result.setId(dto.getId());
+        result.setName(dto.getName());
+        return result;
+    }
 }

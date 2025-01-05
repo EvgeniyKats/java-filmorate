@@ -4,8 +4,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 
 @Data
 public class UserDto {
@@ -15,5 +13,4 @@ public class UserDto {
     private String login;
     private String name;
     private LocalDate birthday;
-    private final List<Long> friendsId = new ArrayList<>();
 }

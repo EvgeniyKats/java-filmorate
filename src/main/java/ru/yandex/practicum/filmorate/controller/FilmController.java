@@ -15,9 +15,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import ru.yandex.practicum.filmorate.dto.film.CreateFilmRequest;
+import ru.yandex.practicum.filmorate.dto.film.CreateFilmDto;
 import ru.yandex.practicum.filmorate.dto.film.FilmDto;
-import ru.yandex.practicum.filmorate.dto.film.UpdateFilmRequest;
+import ru.yandex.practicum.filmorate.dto.film.UpdateFilmDto;
 import ru.yandex.practicum.filmorate.service.film.FilmService;
 
 import java.util.List;
@@ -50,13 +50,14 @@ public class FilmController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public FilmDto createFilm(@Validated @RequestBody CreateFilmRequest request) {
+    public FilmDto createFilm(@Validated @RequestBody CreateFilmDto request) {
         log.info("Получен POST запрос /films");
+        System.out.println(request);
         return filmService.createFilm(request);
     }
 
     @PutMapping
-    public FilmDto updateFilm(@Validated @RequestBody UpdateFilmRequest request) {
+    public FilmDto updateFilm(@Validated @RequestBody UpdateFilmDto request) {
         log.info("Получен PUT запрос /films");
         return filmService.updateFilm(request);
     }

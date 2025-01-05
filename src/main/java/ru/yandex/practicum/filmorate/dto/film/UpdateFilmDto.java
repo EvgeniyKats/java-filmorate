@@ -1,17 +1,18 @@
 package ru.yandex.practicum.filmorate.dto.film;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
-import ru.yandex.practicum.filmorate.model.Genre;
-import ru.yandex.practicum.filmorate.model.RatingMpa;
+import ru.yandex.practicum.filmorate.dto.genre.GenreDto;
+import ru.yandex.practicum.filmorate.dto.ratingmpa.RatingMpaDto;
 
 import java.time.LocalDate;
 import java.util.List;
 
 @Data
-public class UpdateFilmRequest {
+public class UpdateFilmDto {
     @NotNull
     private Long id;
     private String name;
@@ -20,8 +21,10 @@ public class UpdateFilmRequest {
     private LocalDate releaseDate;
     @Positive
     private Integer duration;
-    private RatingMpa mpa;
-    private List<Genre> genres;
+    @JsonProperty("mpa")
+    private RatingMpaDto mpaDto;
+    @JsonProperty("genres")
+    private List<GenreDto> genresDto;
 
     public boolean hasName() {
         return name != null && !name.isBlank();
@@ -40,10 +43,10 @@ public class UpdateFilmRequest {
     }
 
     public boolean hasRatingMpa() {
-        return mpa != null;
+        return mpaDto != null;
     }
 
     public boolean hasGenres() {
-        return genres != null;
+        return genresDto != null;
     }
 }

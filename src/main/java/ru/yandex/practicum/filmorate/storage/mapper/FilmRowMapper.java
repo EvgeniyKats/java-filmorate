@@ -9,7 +9,6 @@ import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.RatingMpa;
 import ru.yandex.practicum.filmorate.storage.genre.FilmGenresStorage;
 import ru.yandex.practicum.filmorate.storage.genre.GenreStorage;
-import ru.yandex.practicum.filmorate.storage.like.FilmLikeStorage;
 import ru.yandex.practicum.filmorate.storage.ratingmpa.RatingMpaStorage;
 
 import java.sql.ResultSet;
@@ -21,7 +20,6 @@ import java.time.LocalDate;
 public class FilmRowMapper implements RowMapper<Film> {
     private final RatingMpaStorage ratingMPAStorage;
     private final FilmGenresStorage filmGenresStorage;
-    private final FilmLikeStorage filmLikeStorage;
     private final GenreStorage genreStorage;
 
     @Override
@@ -43,8 +41,6 @@ public class FilmRowMapper implements RowMapper<Film> {
                 .mpa(ratingMpa)
                 .build();
         fillFilmGenres(result);
-        fillFilmLikes(result);
-
         return result;
     }
 
@@ -54,10 +50,5 @@ public class FilmRowMapper implements RowMapper<Film> {
                     new NotFoundException("Жанр с ID = " + pair.getFilmId() + " не найден."));
             film.addGenre(genre);
         });
-    }
-
-    private void fillFilmLikes(Film film) {
-        filmLikeStorage.getFilmLikesByFilmId(film.getId())
-                .forEach(filmLikePair -> film.addLike(filmLikePair.getUserId()));
     }
 }

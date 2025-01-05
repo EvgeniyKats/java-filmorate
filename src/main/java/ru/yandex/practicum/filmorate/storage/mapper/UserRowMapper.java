@@ -1,20 +1,15 @@
 package ru.yandex.practicum.filmorate.storage.mapper;
 
-import lombok.AllArgsConstructor;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.friend.FriendStorage;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
 
 @Component
-@AllArgsConstructor
 public class UserRowMapper implements RowMapper<User> {
-    private final FriendStorage friendStorage;
-
     @Override
     public User mapRow(ResultSet rs, int rowNum) throws SQLException {
         long id = rs.getLong("user_id");
@@ -23,19 +18,12 @@ public class UserRowMapper implements RowMapper<User> {
         String name = rs.getString("name");
         LocalDate birthday = rs.getDate("birthday").toLocalDate();
 
-        User result = User.builder()
+        return User.builder()
                 .id(id)
                 .email(email)
                 .login(login)
                 .name(name)
                 .birthday(birthday)
                 .build();
-        fillUserFriends(result);
-
-        return result;
-    }
-
-    private void fillUserFriends(User user) {
-        friendStorage.getUserFriendsByUserId(user.getId()).forEach(pair -> user.addFriend(pair.getFriendId()));
     }
 }

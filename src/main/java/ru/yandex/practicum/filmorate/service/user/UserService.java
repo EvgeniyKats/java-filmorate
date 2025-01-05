@@ -1,7 +1,7 @@
 package ru.yandex.practicum.filmorate.service.user;
 
-import ru.yandex.practicum.filmorate.dto.user.CreateUserRequest;
-import ru.yandex.practicum.filmorate.dto.user.UpdateUserRequest;
+import ru.yandex.practicum.filmorate.dto.user.CreateUserDto;
+import ru.yandex.practicum.filmorate.dto.user.UpdateUserDto;
 import ru.yandex.practicum.filmorate.dto.user.UserDto;
 
 import java.util.List;
@@ -9,9 +9,9 @@ import java.util.List;
 public interface UserService {
     List<UserDto> findAll();
 
-    UserDto createUser(CreateUserRequest request);
+    UserDto createUser(CreateUserDto request);
 
-    UserDto updateUser(UpdateUserRequest request);
+    UserDto updateUser(UpdateUserDto request);
 
     UserDto getUserById(long id);
 

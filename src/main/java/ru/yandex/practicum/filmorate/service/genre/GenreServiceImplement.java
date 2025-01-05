@@ -3,9 +3,9 @@ package ru.yandex.practicum.filmorate.service.genre;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.dto.genre.CreateGenreRequest;
+import ru.yandex.practicum.filmorate.dto.genre.CreateGenreDto;
 import ru.yandex.practicum.filmorate.dto.genre.GenreDto;
-import ru.yandex.practicum.filmorate.dto.genre.UpdateGenreRequest;
+import ru.yandex.practicum.filmorate.dto.genre.UpdateGenreDto;
 import ru.yandex.practicum.filmorate.exception.custom.NotFoundException;
 import ru.yandex.practicum.filmorate.mapper.GenreMapper;
 import ru.yandex.practicum.filmorate.model.Genre;
@@ -35,7 +35,7 @@ public class GenreServiceImplement implements GenreService {
     }
 
     @Override
-    public GenreDto createGenre(CreateGenreRequest request) {
+    public GenreDto createGenre(CreateGenreDto request) {
         log.trace("CreateGenreRequest = {}", request);
         Genre genre = GenreMapper.mapToGenre(request);
         log.trace("mapToGenre, {}", genre);
@@ -45,7 +45,7 @@ public class GenreServiceImplement implements GenreService {
     }
 
     @Override
-    public GenreDto updateGenre(int id, UpdateGenreRequest request) {
+    public GenreDto updateGenre(int id, UpdateGenreDto request) {
         log.trace("UpdateGenreRequest = {}", request);
         Genre genre = genreStorage.getGenre(id)
                 .orElseThrow(() -> new NotFoundException("Жанр не найден с ID: " + id));

@@ -10,10 +10,7 @@ import ru.yandex.practicum.filmorate.validate.Create;
 import ru.yandex.practicum.filmorate.validate.Update;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Set;
 
 @Data
@@ -30,24 +27,7 @@ public class Film {
     @Positive(groups = {Create.class, Update.class})
     private Integer duration;
     private RatingMpa mpa;
-    private final Set<Long> filmLikesByUserId = new HashSet<>();
     private final Set<Genre> genres = new LinkedHashSet<>();
-
-    public long getCountLikes() {
-        return filmLikesByUserId.size();
-    }
-
-    public void addLike(long id) {
-        filmLikesByUserId.add(id);
-    }
-
-    public void removeLike(long id) {
-        filmLikesByUserId.remove(id);
-    }
-
-    public List<Long> getFilmLikesByUserId() {
-        return new ArrayList<>(filmLikesByUserId);
-    }
 
     public void addGenre(Genre genre) {
         genres.add(genre);
@@ -55,5 +35,9 @@ public class Film {
 
     public void removeGenre(Genre genre) {
         genres.remove(genre);
+    }
+
+    public void clearGenres() {
+        genres.clear();
     }
 }

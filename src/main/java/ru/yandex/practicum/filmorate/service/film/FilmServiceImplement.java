@@ -3,15 +3,18 @@ package ru.yandex.practicum.filmorate.service.film;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.dto.film.CreateFilmRequest;
+import ru.yandex.practicum.filmorate.dto.film.CreateFilmDto;
 import ru.yandex.practicum.filmorate.dto.film.FilmDto;
-import ru.yandex.practicum.filmorate.dto.film.UpdateFilmRequest;
+import ru.yandex.practicum.filmorate.dto.film.UpdateFilmDto;
+import ru.yandex.practicum.filmorate.dto.genre.GenreDto;
+import ru.yandex.practicum.filmorate.dto.ratingmpa.RatingMpaDto;
 import ru.yandex.practicum.filmorate.exception.custom.IncorrectParameterException;
 import ru.yandex.practicum.filmorate.exception.custom.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.custom.ValidationException;
 import ru.yandex.practicum.filmorate.mapper.FilmMapper;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.FilmGenrePair;
+import ru.yandex.practicum.filmorate.model.FilmLikePair;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.RatingMpa;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
@@ -59,10 +62,10 @@ public class FilmServiceImplement implements FilmService {
     }
 
     @Override
-    public FilmDto createFilm(CreateFilmRequest request) {
+    public FilmDto createFilm(CreateFilmDto request) {
         validateRelease(request.getReleaseDate());
-        validateGenres(request.getGenres());
-        validateMpa(request.getMpa());
+        validateGenres(request.getGenresDto());
+        validateMpa(request.getMpaDto());
         log.trace("Успешная валидация, createFilm");
         Film film = FilmMapper.mapToFilm(request);
         log.debug("Преобразование в фильм, createFilm, {}", film);
@@ -73,11 +76,11 @@ public class FilmServiceImplement implements FilmService {
     }
 
     @Override
-    public FilmDto updateFilm(UpdateFilmRequest request) {
+    public FilmDto updateFilm(UpdateFilmDto request) {
         Film film = throwNotFoundIfIdAbsentInStorage(request.getId());
         validateRelease(request.getReleaseDate());
-        validateMpa(request.getMpa());
-        if (request.hasGenres()) validateGenres(request.getGenres());
+        validateMpa(request.getMpaDto());
+        validateGenres(request.getGenresDto());
         log.trace("Успешная валидация, updateFilm");
         FilmMapper.updateFilmFields(film, request);
         log.trace("Обновленный фильм: {}", film);
@@ -109,26 +112,28 @@ public class FilmServiceImplement implements FilmService {
 
     @Override
     public List<Long> addFilmLike(Long filmId, Long userId) {
-        Film film = throwNotFoundIfIdAbsentInStorage(filmId);
+        throwNotFoundIfIdAbsentInStorage(filmId);
         userStorage.getUserById(userId).orElseThrow(
                 () -> new NotFoundException("Пользователь с id=" + userId + " отсутствует в хранилище."));
         log.trace("addFilmLike, пройдены проверки");
-        film.addLike(userId);
         filmLikeStorage.addLike(filmId, userId);
         log.info("Лайк был успешно поставлен Film: {}, User: {}", filmId, userId);
-        return film.getFilmLikesByUserId();
+        return filmLikeStorage.getFilmLikesByFilmId(filmId).stream()
+                .map(FilmLikePair::getUserId)
+                .toList();
     }
 
     @Override
     public List<Long> removeFilmLike(Long filmId, Long userId) {
-        Film film = throwNotFoundIfIdAbsentInStorage(filmId);
+        throwNotFoundIfIdAbsentInStorage(filmId);
         userStorage.getUserById(userId).orElseThrow(
                 () -> new NotFoundException("Пользователь с id=" + userId + " отсутствует в хранилище."));
         log.trace("removeFilmLike, пройдены проверки");
-        film.removeLike(userId);
         filmLikeStorage.removeLike(filmId, userId);
         log.info("Лайк был успешно удалён Film: {}, User: {}", filmId, userId);
-        return film.getFilmLikesByUserId();
+        return filmLikeStorage.getFilmLikesByFilmId(filmId).stream()
+                .map(FilmLikePair::getUserId)
+                .toList();
     }
 
     private Film throwNotFoundIfIdAbsentInStorage(long id) {
@@ -145,9 +150,9 @@ public class FilmServiceImplement implements FilmService {
         log.trace("Film прошёл проверку на дату релиза <= 28.12.1895: {}.", release);
     }
 
-    private void validateGenres(List<Genre> genres) {
-        if (genres == null) return;
-        genres.forEach(g -> {
+    private void validateGenres(List<GenreDto> genresDto) {
+        if (genresDto == null) return;
+        genresDto.forEach(g -> {
             Genre gData = genreStorage.getGenre(g.getId()).orElseThrow(() ->
                     new IncorrectParameterException("genre id = " + g.getId(),
                             "Жанр с таким id отсутствует в хранилище"));
@@ -155,11 +160,11 @@ public class FilmServiceImplement implements FilmService {
         });
     }
 
-    private void validateMpa(RatingMpa ratingMpa) {
-        if (ratingMpa == null) return;
-        RatingMpa m = ratingMpaStorage.getRatingMPAById(ratingMpa.getId()).orElseThrow(() ->
-                new IncorrectParameterException("mpa id = " + ratingMpa.getId(),
+    private void validateMpa(RatingMpaDto dto) {
+        if (dto == null) return;
+        RatingMpa m = ratingMpaStorage.getRatingMPAById(dto.getId()).orElseThrow(() ->
+                new IncorrectParameterException("mpa id = " + dto.getId(),
                         "Рейтинг с таким id отсутствует в хранилище"));
-        ratingMpa.setName(m.getName());
+        dto.setName(m.getName());
     }
 }

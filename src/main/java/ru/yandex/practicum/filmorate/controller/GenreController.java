@@ -14,8 +14,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import ru.yandex.practicum.filmorate.dto.genre.GenreDto;
-import ru.yandex.practicum.filmorate.dto.genre.CreateGenreRequest;
-import ru.yandex.practicum.filmorate.dto.genre.UpdateGenreRequest;
+import ru.yandex.practicum.filmorate.dto.genre.CreateGenreDto;
+import ru.yandex.practicum.filmorate.dto.genre.UpdateGenreDto;
 import ru.yandex.practicum.filmorate.service.genre.GenreService;
 
 import java.util.List;
@@ -41,13 +41,13 @@ public class GenreController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public GenreDto createGenre(@RequestBody CreateGenreRequest request) {
+    public GenreDto createGenre(@RequestBody CreateGenreDto request) {
         log.info("Получен POST запрос /genres");
         return genreService.createGenre(request);
     }
 
     @PutMapping("/{genreId}")
-    public GenreDto updateGenre(@PathVariable("genreId") int genreId, @RequestBody UpdateGenreRequest request) {
+    public GenreDto updateGenre(@PathVariable("genreId") int genreId, @RequestBody UpdateGenreDto request) {
         log.info("Получен PUT запрос /genres");
         return genreService.updateGenre(genreId, request);
     }

@@ -9,30 +9,15 @@ import lombok.Data;
 import java.time.LocalDate;
 
 @Data
-public class UpdateUserRequest {
+public class CreateUserDto {
     @NotNull
-    private Long id;
     @Email
     private String email;
+    @NotNull
     @Pattern(regexp = "\\S+")
     private String login;
     private String name;
+    @NotNull
     @Past
     private LocalDate birthday;
-
-    public boolean hasEmail() {
-        return email != null;
-    }
-
-    public boolean hasLogin() {
-        return login != null;
-    }
-
-    public boolean hasName() {
-        return name != null && !name.isBlank();
-    }
-
-    public boolean hasBirthDay() {
-        return birthday != null;
-    }
 }

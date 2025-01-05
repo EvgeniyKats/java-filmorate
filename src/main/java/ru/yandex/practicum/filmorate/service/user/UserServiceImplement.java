@@ -3,14 +3,15 @@ package ru.yandex.practicum.filmorate.service.user;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.dto.user.CreateUserRequest;
-import ru.yandex.practicum.filmorate.dto.user.UpdateUserRequest;
+import ru.yandex.practicum.filmorate.dto.user.CreateUserDto;
+import ru.yandex.practicum.filmorate.dto.user.UpdateUserDto;
 import ru.yandex.practicum.filmorate.dto.user.UserDto;
 import ru.yandex.practicum.filmorate.exception.custom.DuplicateException;
 import ru.yandex.practicum.filmorate.exception.custom.EntityNotExistException;
 import ru.yandex.practicum.filmorate.exception.custom.NotFoundException;
 import ru.yandex.practicum.filmorate.mapper.UserMapper;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.model.UserFriendPair;
 import ru.yandex.practicum.filmorate.storage.friend.FriendStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
@@ -38,7 +39,7 @@ public class UserServiceImplement implements UserService {
     }
 
     @Override
-    public UserDto createUser(CreateUserRequest request) {
+    public UserDto createUser(CreateUserDto request) {
         log.trace("CreateUserRequest = {}", request);
         throwDuplicateIfEmailAlreadyInStorage(request.getEmail());
         User user = UserMapper.mapToUser(request);
@@ -53,7 +54,7 @@ public class UserServiceImplement implements UserService {
     }
 
     @Override
-    public UserDto updateUser(UpdateUserRequest request) {
+    public UserDto updateUser(UpdateUserDto request) {
         log.trace("UpdateUserRequest = {}", request);
         User user = throwNotFoundIfIdAbsentInStorage(request.getId());
         if (request.getEmail() != null && !request.getEmail().equals(user.getEmail())) {
@@ -75,34 +76,36 @@ public class UserServiceImplement implements UserService {
 
     @Override
     public List<UserDto> getFriends(Long userId) {
-        User user = userStorage.getUserById(userId).orElseThrow(() -> new EntityNotExistException("User", userId));
+        userStorage.getUserById(userId).orElseThrow(() -> new EntityNotExistException("User", userId));
         log.trace("Пользователь прошёл проверку на null, getFriends().");
-        return user.getFriendsId().stream()
-                .map(this::throwNotFoundIfIdAbsentInStorage)
+        return friendStorage.getUserFriendsByUserId(userId).stream()
+                .map(pair -> throwNotFoundIfIdAbsentInStorage(pair.getFriendId()))
                 .map(UserMapper::mapToUserDto)
                 .toList();
     }
 
     @Override
     public List<Long> addFriend(Long userId, Long friendId) {
-        User user = throwNotFoundIfIdAbsentInStorage(userId);
+        throwNotFoundIfIdAbsentInStorage(userId);
         throwNotFoundIfIdAbsentInStorage(friendId);
         log.trace("User, friend прошли проверку addFriend().");
-        user.addFriend(friendId);
         friendStorage.addFriend(userId, friendId);
         log.trace("Успешное добавление в друзья.");
-        return user.getFriendsId();
+        return friendStorage.getUserFriendsByUserId(userId).stream()
+                .map(UserFriendPair::getFriendId)
+                .toList();
     }
 
     @Override
     public List<Long> removeFriend(Long userId, Long friendId) {
-        User user = throwNotFoundIfIdAbsentInStorage(userId);
+        throwNotFoundIfIdAbsentInStorage(userId);
         throwNotFoundIfIdAbsentInStorage(friendId);
         log.trace("User, friend прошли проверку removeFriend().");
-        user.removeFriend(friendId);
         friendStorage.removeFriend(userId, friendId);
         log.trace("Успешное удаление из друзей.");
-        return user.getFriendsId();
+        return friendStorage.getUserFriendsByUserId(userId).stream()
+                .map(UserFriendPair::getFriendId)
+                .toList();
     }
 
     @Override

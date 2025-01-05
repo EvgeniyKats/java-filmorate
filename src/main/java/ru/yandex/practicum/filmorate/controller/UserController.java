@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import ru.yandex.practicum.filmorate.dto.user.CreateUserRequest;
-import ru.yandex.practicum.filmorate.dto.user.UpdateUserRequest;
+import ru.yandex.practicum.filmorate.dto.user.CreateUserDto;
+import ru.yandex.practicum.filmorate.dto.user.UpdateUserDto;
 import ru.yandex.practicum.filmorate.dto.user.UserDto;
 import ru.yandex.practicum.filmorate.service.user.UserService;
 
@@ -54,13 +54,13 @@ public class UserController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public UserDto createUser(@Validated @RequestBody CreateUserRequest request) {
+    public UserDto createUser(@Validated @RequestBody CreateUserDto request) {
         log.info("Получен POST запрос /users");
         return userService.createUser(request);
     }
 
     @PutMapping
-    public UserDto updateUser(@Validated @RequestBody UpdateUserRequest request) {
+    public UserDto updateUser(@Validated @RequestBody UpdateUserDto request) {
         log.info("Получен PUT запрос /users");
         return userService.updateUser(request);
     }
