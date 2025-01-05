@@ -53,7 +53,7 @@ public class FilmServiceImplement implements FilmService {
 
     @Override
     public List<FilmDto> findAll() {
-        List<FilmDto> result = filmStorage.getAllFilms().stream()
+        List<FilmDto> result = fillFilmGenreFromStorage(filmStorage.getAllFilms()).stream()
                 .map(FilmMapper::mapToFilmDto)
                 .toList();
         log.debug("Текущий список фильмов: {}.", result);
@@ -99,13 +99,13 @@ public class FilmServiceImplement implements FilmService {
         Film film = throwNotFoundIfIdAbsentInStorage(id);
         log.trace("Фильм прошел проверку на null.");
         log.info("getFilmById success");
-        return FilmMapper.mapToFilmDto(film);
+        return FilmMapper.mapToFilmDto(fillFilmGenreFromStorage(List.of(film)).getFirst());
     }
 
     @Override
     public List<FilmDto> getTopFilms(Integer count) {
         log.trace("Параметр count прошёл проверки на корректность.");
-        return filmStorage.getTopFilms(count).stream()
+        return fillFilmGenreFromStorage(filmStorage.getTopFilms(count)).stream()
                 .map(FilmMapper::mapToFilmDto)
                 .toList();
     }
@@ -166,5 +166,13 @@ public class FilmServiceImplement implements FilmService {
                 new IncorrectParameterException("mpa id = " + dto.getId(),
                         "Рейтинг с таким id отсутствует в хранилище"));
         dto.setName(m.getName());
+    }
+
+    private List<Film> fillFilmGenreFromStorage(List<Film> films) {
+        films.forEach(film -> filmGenresStorage.getGenresByFilmId(film.getId()).stream()
+                .map(pair -> genreStorage.getGenre(pair.getGenreId()).orElseThrow(
+                        () -> new NotFoundException("Жанр с ID = " + pair.getFilmId() + " не найден.")))
+                .forEach(film::addGenre));
+        return films;
     }
 }
