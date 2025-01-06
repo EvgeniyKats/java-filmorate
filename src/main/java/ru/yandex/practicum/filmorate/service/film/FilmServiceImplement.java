@@ -1,7 +1,7 @@
 package ru.yandex.practicum.filmorate.service.film;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.dto.film.CreateFilmDto;
 import ru.yandex.practicum.filmorate.dto.film.FilmDto;
@@ -29,6 +29,7 @@ import java.util.List;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class FilmServiceImplement implements FilmService {
     public static final LocalDate MOST_EARLY_RELEASE_DATE =
             LocalDate.of(1895, 12, 28);
@@ -39,17 +40,6 @@ public class FilmServiceImplement implements FilmService {
     private final FilmGenresStorage filmGenresStorage;
     private final GenreStorage genreStorage;
     private final RatingMpaStorage ratingMpaStorage;
-
-    public FilmServiceImplement(@Qualifier("filmDbStorage") FilmStorage filmStorage,
-                                @Qualifier("userDbStorage") UserStorage userStorage,
-                                FilmLikeStorage filmLikeStorage, FilmGenresStorage filmGenresStorage, GenreStorage genreStorage, RatingMpaStorage ratingMpaStorage) {
-        this.filmStorage = filmStorage;
-        this.userStorage = userStorage;
-        this.filmLikeStorage = filmLikeStorage;
-        this.filmGenresStorage = filmGenresStorage;
-        this.genreStorage = genreStorage;
-        this.ratingMpaStorage = ratingMpaStorage;
-    }
 
     @Override
     public List<FilmDto> findAll() {

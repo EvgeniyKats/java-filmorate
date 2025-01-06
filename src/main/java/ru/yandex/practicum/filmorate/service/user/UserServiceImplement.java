@@ -1,7 +1,7 @@
 package ru.yandex.practicum.filmorate.service.user;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.dto.user.CreateUserDto;
 import ru.yandex.practicum.filmorate.dto.user.UpdateUserDto;
@@ -19,14 +19,10 @@ import java.util.List;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class UserServiceImplement implements UserService {
     private final UserStorage userStorage;
     private final FriendStorage friendStorage;
-
-    public UserServiceImplement(@Qualifier("userDbStorage") UserStorage userStorage, FriendStorage friendStorage) {
-        this.userStorage = userStorage;
-        this.friendStorage = friendStorage;
-    }
 
     @Override
     public List<UserDto> findAll() {
