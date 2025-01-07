@@ -8,7 +8,11 @@ import java.util.Optional;
 public interface FilmGenresStorage {
     Optional<FilmGenrePair> getPairById(long id);
 
-    List<FilmGenrePair> getGenresByFilmId(long filmId);
+    List<FilmGenrePair> getAllPairs();
+
+    List<FilmGenrePair> getPairsOfFilmById(long filmId);
+
+    List<FilmGenrePair> getPairsByListOfFilmId(List<Long> filmsIds);
 
     void addGenreToFilm(long filmId, int genreId);
 

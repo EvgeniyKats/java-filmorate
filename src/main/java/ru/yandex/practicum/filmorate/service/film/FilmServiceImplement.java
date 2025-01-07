@@ -25,7 +25,9 @@ import ru.yandex.practicum.filmorate.storage.ratingmpa.RatingMpaStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Service
@@ -43,11 +45,37 @@ public class FilmServiceImplement implements FilmService {
 
     @Override
     public List<FilmDto> findAll() {
-        List<FilmDto> result = fillFilmGenreFromStorage(filmStorage.getAllFilms()).stream()
+        List<Film> allFilms = filmStorage.getAllFilms();
+        List<FilmGenrePair> filmGenrePairs = filmGenresStorage.getAllPairs();
+
+        List<FilmDto> result = fillFilmGenreFromStorage(allFilms, filmGenrePairs).stream()
                 .map(FilmMapper::mapToFilmDto)
                 .toList();
         log.debug("Текущий список фильмов: {}.", result);
         log.info("findAll success");
+        return result;
+    }
+
+    @Override
+    public List<FilmDto> getTopFilms(Integer count) {
+        log.trace("Параметр count прошёл проверки на корректность.");
+        List<Film> topFilms = filmStorage.getTopFilms(count);
+        List<FilmGenrePair> filmGenrePairs = filmGenresStorage.getPairsByListOfFilmId(topFilms.stream()
+                .map(Film::getId)
+                .toList());
+
+        return fillFilmGenreFromStorage(topFilms, filmGenrePairs).stream()
+                .map(FilmMapper::mapToFilmDto)
+                .toList();
+    }
+
+    @Override
+    public FilmDto getFilmById(long id) {
+        Film film = throwNotFoundIfIdAbsentInStorage(id);
+        log.trace("Фильм прошел проверку на null.");
+        List<FilmGenrePair> filmGenrePairs = filmGenresStorage.getPairsOfFilmById(film.getId());
+        FilmDto result = FilmMapper.mapToFilmDto(fillFilmGenreFromStorage(List.of(film), filmGenrePairs).getFirst());
+        log.info("getFilmById success");
         return result;
     }
 
@@ -75,29 +103,13 @@ public class FilmServiceImplement implements FilmService {
         film.updateFieldsFromUpdateDto(request);
         log.trace("Обновленный фильм: {}", film);
         if (request.hasGenres()) {
-            List<FilmGenrePair> pairs = filmGenresStorage.getGenresByFilmId(film.getId());
+            List<FilmGenrePair> pairs = filmGenresStorage.getPairsOfFilmById(film.getId());
             pairs.forEach(p -> filmGenresStorage.removeGenreOfFilm(p.getFilmId(), p.getGenreId()));
             film.getGenres().forEach(genre -> filmGenresStorage.addGenreToFilm(request.getId(), genre.getId()));
         }
         film = filmStorage.updateFilm(film);
         log.info("updateFilm success");
         return FilmMapper.mapToFilmDto(film);
-    }
-
-    @Override
-    public FilmDto getFilmById(long id) {
-        Film film = throwNotFoundIfIdAbsentInStorage(id);
-        log.trace("Фильм прошел проверку на null.");
-        log.info("getFilmById success");
-        return FilmMapper.mapToFilmDto(fillFilmGenreFromStorage(List.of(film)).getFirst());
-    }
-
-    @Override
-    public List<FilmDto> getTopFilms(Integer count) {
-        log.trace("Параметр count прошёл проверки на корректность.");
-        return fillFilmGenreFromStorage(filmStorage.getTopFilms(count)).stream()
-                .map(FilmMapper::mapToFilmDto)
-                .toList();
     }
 
     @Override
@@ -158,11 +170,14 @@ public class FilmServiceImplement implements FilmService {
         dto.setName(m.getName());
     }
 
-    private List<Film> fillFilmGenreFromStorage(List<Film> films) {
-        films.forEach(film -> filmGenresStorage.getGenresByFilmId(film.getId()).stream()
-                .map(pair -> genreStorage.getGenre(pair.getGenreId()).orElseThrow(
-                        () -> new NotFoundException("Жанр с ID = " + pair.getFilmId() + " не найден.")))
-                .forEach(film::addGenre));
+    private List<Film> fillFilmGenreFromStorage(List<Film> films, List<FilmGenrePair> pairs) {
+        Map<Long, Film> allFilms = new HashMap<>();
+        films.forEach(f -> allFilms.put(f.getId(), f));
+
+        Map<Integer, Genre> allGenres = new HashMap<>();
+        genreStorage.getAllGenres().forEach(genre -> allGenres.put(genre.getId(), genre));
+
+        pairs.forEach(pair -> allFilms.get(pair.getFilmId()).addGenre(allGenres.get(pair.getGenreId())));
         return films;
     }
 }

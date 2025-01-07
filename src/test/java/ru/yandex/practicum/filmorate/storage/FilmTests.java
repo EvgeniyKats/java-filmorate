@@ -8,6 +8,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.annotation.DirtiesContext;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.FilmGenrePair;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.RatingMpa;
 import ru.yandex.practicum.filmorate.model.User;
@@ -162,11 +163,24 @@ public class FilmTests {
 
     @Test
     void shouldGetPairsOfFilmAndGenre() {
-        assertThat(filmGenresStorage.getGenresByFilmId(1)).isEmpty();
+        assertThat(filmGenresStorage.getPairsOfFilmById(1)).isEmpty();
         Film f = addFilm();
         filmGenresStorage.addGenreToFilm(f.getId(), f.getGenres().stream().iterator().next().getId());
         assertThat(filmGenresStorage.getPairById(1)).isPresent();
-        assertThat(filmGenresStorage.getGenresByFilmId(1)).isNotEmpty();
+        assertThat(filmGenresStorage.getPairsOfFilmById(1)).isNotEmpty();
+    }
+
+    @Test
+    void shouldGetPairsOfListFilmId() {
+        Film f1 = addFilm();
+        Film f2 = addFilm();
+        Film f3 = addFilm();
+        filmGenresStorage.addGenreToFilm(f1.getId(), f1.getGenres().iterator().next().getId());
+        filmGenresStorage.addGenreToFilm(f2.getId(), f2.getGenres().iterator().next().getId());
+        filmGenresStorage.addGenreToFilm(f3.getId(), f3.getGenres().iterator().next().getId());
+        List<Film> films = List.of(f1, f2);
+        List<FilmGenrePair> pairs = filmGenresStorage.getPairsByListOfFilmId(films.stream().map(Film::getId).toList());
+        assertThat(pairs).size().isEqualTo(2);
     }
 
     @Test
@@ -177,7 +191,7 @@ public class FilmTests {
         f.addGenre(genre);
         filmStorage.updateFilm(f);
         filmGenresStorage.addGenreToFilm(f.getId(), genre.getId());
-        assertThat(filmGenresStorage.getGenresByFilmId(1)).size().isEqualTo(2);
+        assertThat(filmGenresStorage.getPairsOfFilmById(1)).size().isEqualTo(2);
     }
 
     @Test
@@ -186,10 +200,10 @@ public class FilmTests {
         int genreId = f.getGenres().iterator().next().getId();
 
         filmGenresStorage.addGenreToFilm(f.getId(), genreId);
-        assertThat(filmGenresStorage.getGenresByFilmId(1)).size().isEqualTo(1);
+        assertThat(filmGenresStorage.getPairsOfFilmById(1)).size().isEqualTo(1);
 
         filmGenresStorage.removeGenreOfFilm(f.getId(), genreId);
-        assertThat(filmGenresStorage.getGenresByFilmId(1)).size().isEqualTo(0);
+        assertThat(filmGenresStorage.getPairsOfFilmById(1)).size().isEqualTo(0);
     }
 
     @Test
