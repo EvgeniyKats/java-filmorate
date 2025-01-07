@@ -64,9 +64,12 @@ public class FilmServiceImplement implements FilmService {
                 .map(Film::getId)
                 .toList());
 
-        return fillFilmGenresByFilmGenrePair(topFilms, filmGenrePairs).stream()
+        List<FilmDto> result = fillFilmGenresByFilmGenrePair(topFilms, filmGenrePairs).stream()
                 .map(FilmMapper::mapToFilmDto)
                 .toList();
+        log.debug("Текущий топ фильмов {}", result);
+        log.info("getTopFilms success");
+        return result;
     }
 
     @Override
@@ -75,6 +78,7 @@ public class FilmServiceImplement implements FilmService {
         log.trace("Фильм прошел проверку на null.");
         List<FilmGenrePair> filmGenrePairs = filmGenresStorage.getPairsOfFilmById(film.getId());
         FilmDto result = FilmMapper.mapToFilmDto(fillFilmGenresByFilmGenrePair(List.of(film), filmGenrePairs).getFirst());
+        log.debug("getFilmById, filmDto = {}", result);
         log.info("getFilmById success");
         return result;
     }
