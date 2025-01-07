@@ -48,7 +48,7 @@ public class FilmServiceImplement implements FilmService {
         List<Film> allFilms = filmStorage.getAllFilms();
         List<FilmGenrePair> filmGenrePairs = filmGenresStorage.getAllPairs();
 
-        List<FilmDto> result = fillFilmGenreFromStorage(allFilms, filmGenrePairs).stream()
+        List<FilmDto> result = fillFilmGenresByFilmGenrePair(allFilms, filmGenrePairs).stream()
                 .map(FilmMapper::mapToFilmDto)
                 .toList();
         log.debug("Текущий список фильмов: {}.", result);
@@ -64,7 +64,7 @@ public class FilmServiceImplement implements FilmService {
                 .map(Film::getId)
                 .toList());
 
-        return fillFilmGenreFromStorage(topFilms, filmGenrePairs).stream()
+        return fillFilmGenresByFilmGenrePair(topFilms, filmGenrePairs).stream()
                 .map(FilmMapper::mapToFilmDto)
                 .toList();
     }
@@ -74,7 +74,7 @@ public class FilmServiceImplement implements FilmService {
         Film film = throwNotFoundIfIdAbsentInStorage(id);
         log.trace("Фильм прошел проверку на null.");
         List<FilmGenrePair> filmGenrePairs = filmGenresStorage.getPairsOfFilmById(film.getId());
-        FilmDto result = FilmMapper.mapToFilmDto(fillFilmGenreFromStorage(List.of(film), filmGenrePairs).getFirst());
+        FilmDto result = FilmMapper.mapToFilmDto(fillFilmGenresByFilmGenrePair(List.of(film), filmGenrePairs).getFirst());
         log.info("getFilmById success");
         return result;
     }
@@ -170,7 +170,7 @@ public class FilmServiceImplement implements FilmService {
         dto.setName(m.getName());
     }
 
-    private List<Film> fillFilmGenreFromStorage(List<Film> films, List<FilmGenrePair> pairs) {
+    private List<Film> fillFilmGenresByFilmGenrePair(List<Film> films, List<FilmGenrePair> pairs) {
         Map<Long, Film> allFilms = new HashMap<>();
         films.forEach(f -> allFilms.put(f.getId(), f));
 
