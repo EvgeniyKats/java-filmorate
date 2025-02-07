@@ -1,3 +1,15 @@
 logging.level:
   ru.yandex.practicum.filmorate: TRACE
-  org.zalando.logbook: TRACE
+#  org.zalando.logbook: TRACE
+spring:
+  config:
+    import: "dataSourceFile.yaml"
+  h2:
+    console.enabled: true
+  sql:
+    init:
+      mode: ALWAYS
+  datasource:
+    driverClassName: org.h2.Driver
+    username: sa
+    password: password

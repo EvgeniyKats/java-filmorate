@@ -15,10 +15,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.dto.film.CreateFilmDto;
+import ru.yandex.practicum.filmorate.dto.film.FilmDto;
+import ru.yandex.practicum.filmorate.dto.film.UpdateFilmDto;
 import ru.yandex.practicum.filmorate.service.film.FilmService;
-import ru.yandex.practicum.filmorate.validate.Create;
-import ru.yandex.practicum.filmorate.validate.Update;
 
 import java.util.List;
 
@@ -30,19 +30,19 @@ public class FilmController {
     private final FilmService filmService;
 
     @GetMapping
-    public List<Film> findAll() {
+    public List<FilmDto> findAll() {
         log.info("Получен GET запрос /films");
         return filmService.findAll();
     }
 
     @GetMapping("/{id}")
-    public Film getFilmById(@PathVariable Long id) {
+    public FilmDto getFilmById(@PathVariable Long id) {
         log.info("Получен GET запрос /films/{}", id);
         return filmService.getFilmById(id);
     }
 
     @GetMapping("/popular")
-    public List<Film> getTopFilms(
+    public List<FilmDto> getTopFilms(
             @Min(0) @RequestParam(defaultValue = "10") Integer count) {
         log.info("Получен GET запрос /films/popular?count={}", count);
         return filmService.getTopFilms(count);
@@ -50,15 +50,16 @@ public class FilmController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Film createFilm(@Validated(Create.class) @RequestBody Film film) {
+    public FilmDto createFilm(@Validated @RequestBody CreateFilmDto request) {
         log.info("Получен POST запрос /films");
-        return filmService.createFilm(film);
+        System.out.println(request);
+        return filmService.createFilm(request);
     }
 
     @PutMapping
-    public Film updateFilm(@Validated(Update.class) @RequestBody Film film) {
+    public FilmDto updateFilm(@Validated @RequestBody UpdateFilmDto request) {
         log.info("Получен PUT запрос /films");
-        return filmService.updateFilm(film);
+        return filmService.updateFilm(request);
     }
 
     @PutMapping("/{id}/like/{userId}")

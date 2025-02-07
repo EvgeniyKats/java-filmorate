@@ -1,120 +1,129 @@
 package ru.yandex.practicum.filmorate.service.user;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.dto.user.CreateUserDto;
+import ru.yandex.practicum.filmorate.dto.user.UpdateUserDto;
+import ru.yandex.practicum.filmorate.dto.user.UserDto;
 import ru.yandex.practicum.filmorate.exception.custom.DuplicateException;
 import ru.yandex.practicum.filmorate.exception.custom.EntityNotExistException;
 import ru.yandex.practicum.filmorate.exception.custom.NotFoundException;
+import ru.yandex.practicum.filmorate.mapper.UserMapper;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.model.UserFriendPair;
+import ru.yandex.practicum.filmorate.storage.friend.FriendStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Slf4j
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class UserServiceImplement implements UserService {
     private final UserStorage userStorage;
+    private final FriendStorage friendStorage;
 
     @Override
-    public List<User> findAll() {
-        List<User> result = userStorage.getAllUsers();
-        log.debug("Текущий список пользователей: {}.", result);
-        return result;
+    public List<UserDto> findAll() {
+        List<User> users = userStorage.getAllUsers();
+        log.debug("Текущий список пользователей: {}.", users);
+        log.info("findAll success");
+        return users.stream()
+                .map(UserMapper::mapToUserDto)
+                .toList();
     }
 
     @Override
-    public User createUser(User user) {
-        throwDuplicateIfEmailAlreadyInStorage(user, false);
+    public UserDto createUser(CreateUserDto request) {
+        log.trace("CreateUserRequest = {}", request);
+        throwDuplicateIfEmailAlreadyInStorage(request.getEmail());
+        User user = UserMapper.mapToUser(request);
+        log.trace("mapToUser = {}", user);
         if (user.getName() == null || user.getName().isBlank()) {
             user.setName(user.getLogin());
             log.trace("Пользователь не указал имя. Для отображения используется логин.");
         }
         userStorage.addUser(user);
         log.info("User {}, был добавлен в хранилище.", user);
-        return user;
+        return UserMapper.mapToUserDto(user);
     }
 
     @Override
-    public User updateUser(User user) {
-        throwNotFoundIfUserAbsentInStorage(user);
-        throwDuplicateIfEmailAlreadyInStorage(user, true);
-        return userStorage.updateUser(user);
+    public UserDto updateUser(UpdateUserDto request) {
+        log.trace("UpdateUserRequest = {}", request);
+        User user = throwNotFoundIfIdAbsentInStorage(request.getId());
+        if (request.getEmail() != null && !request.getEmail().equals(user.getEmail())) {
+            throwDuplicateIfEmailAlreadyInStorage(request.getEmail());
+        }
+        user.updateFieldsFromUpdateDto(request);
+        log.trace("updateUserFields = {}", user);
+        user = userStorage.updateUser(user);
+        log.info("updateUser success");
+        return UserMapper.mapToUserDto(user);
     }
 
     @Override
-    public User getUserById(long id) {
-        User user = userStorage.getUser(id);
-        if (user == null) throw new NotFoundException("Пользователь с id=" + id + " отсутствует в хранилище.");
+    public UserDto getUserById(long id) {
+        User user = throwNotFoundIfIdAbsentInStorage(id);
         log.trace("Пользователь прошёл проверку на null, getUserById().");
-        return user;
+        return UserMapper.mapToUserDto(user);
     }
 
     @Override
-    public List<User> getFriends(Long userId) {
-        User user = userStorage.getUser(userId);
-        if (user == null) throw new EntityNotExistException("User", userId);
+    public List<UserDto> getFriends(Long userId) {
+        userStorage.getUserById(userId).orElseThrow(() -> new EntityNotExistException("User", userId));
         log.trace("Пользователь прошёл проверку на null, getFriends().");
-        return user.getFriendsId().stream()
-                .map(userStorage::getUser)
+        return friendStorage.getUserFriendsByUserId(userId).stream()
+                .map(pair -> throwNotFoundIfIdAbsentInStorage(pair.getFriendId()))
+                .map(UserMapper::mapToUserDto)
                 .toList();
     }
 
     @Override
     public List<Long> addFriend(Long userId, Long friendId) {
-        User user = userStorage.getUser(userId);
-        if (user == null) throw new EntityNotExistException("User", userId);
-        User friend = userStorage.getUser(friendId);
-        if (friend == null) throw new EntityNotExistException("Friend", friendId);
+        throwNotFoundIfIdAbsentInStorage(userId);
+        throwNotFoundIfIdAbsentInStorage(friendId);
         log.trace("User, friend прошли проверку addFriend().");
-        user.addFriend(friendId);
-        friend.addFriend(userId);
+        friendStorage.addFriend(userId, friendId);
         log.trace("Успешное добавление в друзья.");
-        return user.getFriendsId();
+        return friendStorage.getUserFriendsByUserId(userId).stream()
+                .map(UserFriendPair::getFriendId)
+                .toList();
     }
 
     @Override
     public List<Long> removeFriend(Long userId, Long friendId) {
-        User user = userStorage.getUser(userId);
-        if (user == null) throw new EntityNotExistException("User", userId);
-        User friend = userStorage.getUser(friendId);
-        if (friend == null) throw new EntityNotExistException("Friend", friendId);
+        throwNotFoundIfIdAbsentInStorage(userId);
+        throwNotFoundIfIdAbsentInStorage(friendId);
         log.trace("User, friend прошли проверку removeFriend().");
-        user.removeFriend(friendId);
-        friend.removeFriend(userId);
+        friendStorage.removeFriend(userId, friendId);
         log.trace("Успешное удаление из друзей.");
-        return user.getFriendsId();
-    }
-
-    @Override
-    public List<User> getCommonFriends(Long userId, Long friendId) {
-        User user = userStorage.getUser(userId);
-        if (user == null) throw new EntityNotExistException("User", userId);
-        User friend = userStorage.getUser(friendId);
-        if (friend == null) throw new EntityNotExistException("Friend", friendId);
-        log.trace("User, friend прошли проверку getCommonFriends().");
-        Set<Long> friendsIdOfFriend = new HashSet<>(friend.getFriendsId());
-        return user.getFriendsId().stream()
-                .filter(friendsIdOfFriend::contains)
-                .map(userStorage::getUser)
+        return friendStorage.getUserFriendsByUserId(userId).stream()
+                .map(UserFriendPair::getFriendId)
                 .toList();
     }
 
-    private void throwNotFoundIfUserAbsentInStorage(User user) {
-        if (user.getId() == null || userStorage.isUserNotExistInStorageById(user.getId())) {
-            throw new NotFoundException("В хранилище отсутствует id: " + user.getId());
-        }
-        log.trace("User прошёл проверку на отсутствие id в хранилище.");
+    @Override
+    public List<UserDto> getCommonFriends(Long userId, Long friendId) {
+        User user = throwNotFoundIfIdAbsentInStorage(userId);
+        User friend = throwNotFoundIfIdAbsentInStorage(friendId);
+        log.trace("User, friend прошли проверку getCommonFriends().");
+        return userStorage.getCommonFriends(user, friend).stream()
+                .map(UserMapper::mapToUserDto)
+                .toList();
     }
 
-    private void throwDuplicateIfEmailAlreadyInStorage(User user, boolean update) {
-        if (!update || user.getEmail() != null && !user.equals(userStorage.getUser(user.getId()))) {
-            if (userStorage.isUserInStorageByUser(user)) {
-                throw new DuplicateException("Такой Email уже используется " + user.getEmail());
-            }
+    private User throwNotFoundIfIdAbsentInStorage(long id) {
+        User user = userStorage.getUserById(id).orElseThrow(
+                () -> new NotFoundException("Пользователь с id=" + id + " отсутствует в хранилище."));
+        log.trace("User прошёл проверку на отсутствие id в хранилище.");
+        return user;
+    }
+
+    private void throwDuplicateIfEmailAlreadyInStorage(String email) {
+        if (userStorage.isEmailAlreadyInData(email)) {
+            throw new DuplicateException("Такой Email уже используется " + email);
         }
         log.trace("User прошёл проверку на дубликат.");
     }
