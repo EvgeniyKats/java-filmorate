@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.dto.ratingmpa.RatingMpaDto;
 import ru.yandex.practicum.filmorate.exception.custom.NotFoundException;
-import ru.yandex.practicum.filmorate.mapper.RatingMpaMapper;
+import ru.yandex.practicum.filmorate.dto.mapper.RatingMpaMapper;
 import ru.yandex.practicum.filmorate.model.RatingMpa;
 import ru.yandex.practicum.filmorate.storage.ratingmpa.RatingMpaStorage;
 

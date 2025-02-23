@@ -3,8 +3,8 @@ package ru.yandex.practicum.filmorate.model;
 import lombok.Builder;
 import lombok.Data;
 import ru.yandex.practicum.filmorate.dto.film.UpdateFilmDto;
-import ru.yandex.practicum.filmorate.mapper.GenreMapper;
-import ru.yandex.practicum.filmorate.mapper.RatingMpaMapper;
+import ru.yandex.practicum.filmorate.dto.mapper.GenreMapper;
+import ru.yandex.practicum.filmorate.dto.mapper.RatingMpaMapper;
 
 import java.time.LocalDate;
 import java.util.LinkedHashSet;
@@ -18,7 +18,7 @@ public class Film {
     private String description;
     private LocalDate releaseDate;
     private Integer duration;
-    private RatingMpa mpa;
+    private Integer mpaId;
     private final Set<Genre> genres = new LinkedHashSet<>();
 
     public void addGenre(Genre genre) {
@@ -31,7 +31,7 @@ public class Film {
         if (request.hasDescription()) description = request.getDescription();
         if (request.hasReleaseDate()) releaseDate = request.getReleaseDate();
         if (request.hasDuration()) duration = request.getDuration();
-        if (request.hasRatingMpa()) mpa = RatingMpaMapper.mapToRatingMpa(request.getMpaDto());
+        if (request.hasRatingMpa()) mpaId = RatingMpaMapper.mapToRatingMpa(request.getMpaDto());
         if (request.hasGenres()) {
             request.getGenresDto().stream()
                     .map(GenreMapper::mapToGenre)

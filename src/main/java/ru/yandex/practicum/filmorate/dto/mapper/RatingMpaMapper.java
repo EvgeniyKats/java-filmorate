@@ -1,13 +1,14 @@
-package ru.yandex.practicum.filmorate.mapper;
+package ru.yandex.practicum.filmorate.dto.mapper;
+
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 import ru.yandex.practicum.filmorate.dto.ratingmpa.RatingMpaDto;
 import ru.yandex.practicum.filmorate.model.RatingMpa;
 
+
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class RatingMpaMapper {
-
-    private RatingMpaMapper() {
-    }
-
     public static RatingMpaDto mapToRatingMpaDto(RatingMpa ratingMpa) {
         RatingMpaDto result = new RatingMpaDto();
         result.setId(ratingMpa.getId());
@@ -15,10 +16,7 @@ public class RatingMpaMapper {
         return result;
     }
 
-    public static RatingMpa mapToRatingMpa(RatingMpaDto dto) {
-        RatingMpa result = new RatingMpa();
-        result.setId(dto.getId());
-        result.setName(dto.getName());
-        return result;
+    public static Integer mapToRatingMpa(RatingMpaDto dto) {
+        return dto.getId();
     }
 }
