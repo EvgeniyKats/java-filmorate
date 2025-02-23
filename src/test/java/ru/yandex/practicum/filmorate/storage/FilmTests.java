@@ -253,7 +253,7 @@ public class FilmTests {
                 .duration(1)
                 .releaseDate(LocalDate.now().minusDays(1))
                 .description("descr")
-                .mpa(ratingMpa)
+                .mpaId(ratingMpa.getId())
                 .build());
         res.addGenre(genre);
         return res;

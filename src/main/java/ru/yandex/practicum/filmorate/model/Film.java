@@ -18,7 +18,7 @@ public class Film {
     private String description;
     private LocalDate releaseDate;
     private Integer duration;
-    private RatingMpa mpa;
+    private Integer mpaId;
     private final Set<Genre> genres = new LinkedHashSet<>();
 
     public void addGenre(Genre genre) {
@@ -31,7 +31,7 @@ public class Film {
         if (request.hasDescription()) description = request.getDescription();
         if (request.hasReleaseDate()) releaseDate = request.getReleaseDate();
         if (request.hasDuration()) duration = request.getDuration();
-        if (request.hasRatingMpa()) mpa = RatingMpaMapper.mapToRatingMpa(request.getMpaDto());
+        if (request.hasRatingMpa()) mpaId = RatingMpaMapper.mapToRatingMpa(request.getMpaDto());
         if (request.hasGenres()) {
             request.getGenresDto().stream()
                     .map(GenreMapper::mapToGenre)
