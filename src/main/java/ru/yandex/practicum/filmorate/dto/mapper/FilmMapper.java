@@ -1,5 +1,7 @@
-package ru.yandex.practicum.filmorate.mapper;
+package ru.yandex.practicum.filmorate.dto.mapper;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import ru.yandex.practicum.filmorate.dto.film.CreateFilmDto;
 import ru.yandex.practicum.filmorate.dto.film.FilmDto;
 import ru.yandex.practicum.filmorate.dto.genre.GenreDto;
@@ -7,10 +9,8 @@ import ru.yandex.practicum.filmorate.model.Film;
 
 import java.util.List;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class FilmMapper {
-
-    private FilmMapper() {
-    }
 
     public static Film mapToFilm(CreateFilmDto request) {
         Film result = Film.builder()

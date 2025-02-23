@@ -3,8 +3,8 @@ package ru.yandex.practicum.filmorate.model;
 import lombok.Builder;
 import lombok.Data;
 import ru.yandex.practicum.filmorate.dto.film.UpdateFilmDto;
-import ru.yandex.practicum.filmorate.mapper.GenreMapper;
-import ru.yandex.practicum.filmorate.mapper.RatingMpaMapper;
+import ru.yandex.practicum.filmorate.dto.mapper.GenreMapper;
+import ru.yandex.practicum.filmorate.dto.mapper.RatingMpaMapper;
 
 import java.time.LocalDate;
 import java.util.LinkedHashSet;

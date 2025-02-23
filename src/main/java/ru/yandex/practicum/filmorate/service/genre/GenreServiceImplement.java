@@ -7,7 +7,7 @@ import ru.yandex.practicum.filmorate.dto.genre.CreateGenreDto;
 import ru.yandex.practicum.filmorate.dto.genre.GenreDto;
 import ru.yandex.practicum.filmorate.dto.genre.UpdateGenreDto;
 import ru.yandex.practicum.filmorate.exception.custom.NotFoundException;
-import ru.yandex.practicum.filmorate.mapper.GenreMapper;
+import ru.yandex.practicum.filmorate.dto.mapper.GenreMapper;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.storage.genre.GenreStorage;
 

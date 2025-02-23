@@ -1,12 +1,12 @@
-package ru.yandex.practicum.filmorate.mapper;
+package ru.yandex.practicum.filmorate.dto.mapper;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import ru.yandex.practicum.filmorate.dto.ratingmpa.RatingMpaDto;
 import ru.yandex.practicum.filmorate.model.RatingMpa;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class RatingMpaMapper {
-
-    private RatingMpaMapper() {
-    }
 
     public static RatingMpaDto mapToRatingMpaDto(RatingMpa ratingMpa) {
         RatingMpaDto result = new RatingMpaDto();
