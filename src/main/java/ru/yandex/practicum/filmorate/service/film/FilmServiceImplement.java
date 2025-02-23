@@ -8,7 +8,6 @@ import ru.yandex.practicum.filmorate.dto.film.FilmDto;
 import ru.yandex.practicum.filmorate.dto.film.UpdateFilmDto;
 import ru.yandex.practicum.filmorate.dto.genre.GenreDto;
 import ru.yandex.practicum.filmorate.dto.ratingmpa.RatingMpaDto;
-import ru.yandex.practicum.filmorate.exception.custom.IncorrectParameterException;
 import ru.yandex.practicum.filmorate.exception.custom.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.custom.ValidationException;
 import ru.yandex.practicum.filmorate.dto.mapper.FilmMapper;
@@ -178,8 +177,7 @@ public class FilmServiceImplement implements FilmService {
         if (genresDto == null) return;
         genresDto.forEach(g -> {
             Genre gData = genreStorage.getGenre(g.getId()).orElseThrow(() ->
-                    new IncorrectParameterException("genre id = " + g.getId(),
-                            "Жанр с таким id отсутствует в хранилище"));
+                    new NotFoundException("genre id = " + g.getId() + "Жанр с таким id отсутствует в хранилище"));
             g.setName(gData.getName());
         });
     }
@@ -187,8 +185,7 @@ public class FilmServiceImplement implements FilmService {
     private void validateMpa(RatingMpaDto dto) {
         if (dto == null) return;
         ratingMpaStorage.getRatingMPAById(dto.getId()).orElseThrow(() ->
-                new IncorrectParameterException("mpa id = " + dto.getId(),
-                        "Рейтинг с таким id отсутствует в хранилище"));
+                new NotFoundException("mpa id = " + dto.getId() + "Рейтинг с таким id отсутствует в хранилище"));
     }
 
     private List<Film> fillFilmGenresByFilmGenrePair(List<Film> films, List<FilmGenrePair> pairs) {
